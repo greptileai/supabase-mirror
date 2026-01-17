@@ -2449,7 +2449,17 @@ export interface LogDrainSaveButtonClickedEvent {
     /**
      * Type of the destination saved
      */
-    destination: 'webhook' | 'datadog' | 'loki' | 'sentry'
+    destination:
+      | 'postgres'
+      | 'bigquery'
+      | 'clickhouse'
+      | 'webhook'
+      | 'datadog'
+      | 'elastic'
+      | 'loki'
+      | 'sentry'
+      | 's3'
+      | 'axiom'
   }
   groups: TelemetryGroups
 }
@@ -2467,7 +2477,17 @@ export interface LogDrainConfirmButtonSubmittedEvent {
     /**
      * Type of the destination confirmed
      */
-    destination: 'webhook' | 'datadog' | 'loki' | 'sentry'
+    destination:
+      | 'postgres'
+      | 'bigquery'
+      | 'clickhouse'
+      | 'webhook'
+      | 'datadog'
+      | 'elastic'
+      | 'loki'
+      | 'sentry'
+      | 's3'
+      | 'axiom'
   }
   groups: TelemetryGroups
 }

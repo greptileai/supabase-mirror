@@ -242,6 +242,7 @@ export const PolicyEditorPanel = memo(function ({
   }
 
   // when the panel is closed, reset all values
+  // when selectedPolicy changes, reload the policy data
   useEffect(() => {
     if (!visible) {
       editorOneRef.current?.setValue('')
@@ -277,7 +278,7 @@ export const PolicyEditorPanel = memo(function ({
         form.reset({ ...defaultValues, table: selectedTable })
       }
     }
-  }, [visible])
+  }, [visible, selectedPolicy?.id, selectedTable, canUpdatePolicies, form])
 
   // whenever the deps (current policy details, new error or error panel opens) change, recalculate
   // the height of the editor

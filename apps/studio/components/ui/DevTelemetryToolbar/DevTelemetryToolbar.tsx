@@ -232,7 +232,9 @@ export function DevTelemetryToolbar() {
     if (!isEnabled || !isOpen) return
 
     const sessionId = getCookie('session_id')
-    const url = `${API_URL}/telemetry/stream${sessionId ? `?session_id=${sessionId}` : ''}`
+    const url = `${API_URL}/telemetry/stream${
+      sessionId ? `?session_id=${encodeURIComponent(sessionId)}` : ''
+    }`
 
     const eventSource = new EventSource(url, { withCredentials: true })
     eventSourceRef.current = eventSource

@@ -390,7 +390,7 @@ export function DevTelemetryToolbar() {
                   onChange={(e) => setEventFilter(e.target.value)}
                   className="flex-1"
                 />
-                <Button variant="outline" onClick={() => setEvents([])}>
+                <Button type="outline" onClick={() => setEvents([])}>
                   Clear
                 </Button>
               </div>
@@ -416,7 +416,7 @@ export function DevTelemetryToolbar() {
                 {overrideCount > 0 && (
                   <div className="flex items-center justify-between p-3 bg-warning/10 rounded-md">
                     <span className="text-sm text-warning">{overrideCount} flag(s) overridden</span>
-                    <Button variant="outline" onClick={clearOverrides}>
+                    <Button type="outline" onClick={clearOverrides}>
                       Clear & Reload
                     </Button>
                   </div>

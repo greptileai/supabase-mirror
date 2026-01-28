@@ -335,7 +335,7 @@ export function DevTelemetryToolbar() {
         <button
           onClick={() => setIsOpen(true)}
           className={cn(
-            'p-3 rounded-full shadow-lg',
+            'relative p-3 rounded-full shadow-lg',
             'bg-brand-500 hover:bg-brand-600 text-white',
             'transition-all duration-200 hover:scale-105'
           )}

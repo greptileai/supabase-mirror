@@ -3,7 +3,7 @@
 import { type ClientTelemetryEvent, posthogClient, useFeatureFlags } from 'common'
 import { API_URL } from 'lib/constants'
 import { Activity, ChevronDown, ChevronUp, Flag, X } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Badge,
   Button,
@@ -49,6 +49,7 @@ interface DevTelemetryEvent {
 }
 
 const IS_LOCAL_DEV = process.env.NEXT_PUBLIC_ENVIRONMENT === 'local'
+const MAX_EVENTS = 200
 
 function getCookie(name: string): string | undefined {
   if (typeof document === 'undefined') return undefined
@@ -170,7 +171,6 @@ export function DevTelemetryToolbar() {
   const [events, setEvents] = useState<DevTelemetryEvent[]>([])
   const [activeTab, setActiveTab] = useState<string>('events')
   const [eventFilter, setEventFilter] = useState<string>('')
-  const eventSourceRef = useRef<EventSource | null>(null)
   const { posthog: currentFlags } = useFeatureFlags()
   const [flagOverrides, setFlagOverrides] = useState<Record<string, unknown>>({})
 
@@ -221,7 +221,7 @@ export function DevTelemetryToolbar() {
       setEvents((prev) => {
         const key = `${event.source}-${event.id}`
         if (prev.some((e) => `${e.source}-${e.id}` === key)) return prev
-        return [...prev.slice(-199), event]
+        return [...prev.slice(-(MAX_EVENTS - 1)), event]
       })
     })
 
@@ -237,7 +237,6 @@ export function DevTelemetryToolbar() {
     }`
 
     const eventSource = new EventSource(url, { withCredentials: true })
-    eventSourceRef.current = eventSource
 
     eventSource.onmessage = (event) => {
       try {
@@ -254,7 +253,7 @@ export function DevTelemetryToolbar() {
         setEvents((prev) => {
           const key = `${transformedEvent.source}-${transformedEvent.id}`
           if (prev.some((e) => `${e.source}-${e.id}` === key)) return prev
-          return [...prev.slice(-199), transformedEvent]
+          return [...prev.slice(-(MAX_EVENTS - 1)), transformedEvent]
         })
       } catch (e) {
         console.error('Failed to parse SSE event:', e)
@@ -267,7 +266,6 @@ export function DevTelemetryToolbar() {
 
     return () => {
       eventSource.close()
-      eventSourceRef.current = null
     }
   }, [isEnabled, isOpen])
 
@@ -392,7 +390,7 @@ export function DevTelemetryToolbar() {
                   onChange={(e) => setEventFilter(e.target.value)}
                   className="flex-1"
                 />
-                <Button type="outline" onClick={() => setEvents([])}>
+                <Button variant="outline" onClick={() => setEvents([])}>
                   Clear
                 </Button>
               </div>
@@ -418,7 +416,7 @@ export function DevTelemetryToolbar() {
                 {overrideCount > 0 && (
                   <div className="flex items-center justify-between p-3 bg-warning/10 rounded-md">
                     <span className="text-sm text-warning">{overrideCount} flag(s) overridden</span>
-                    <Button type="outline" onClick={clearOverrides}>
+                    <Button variant="outline" onClick={clearOverrides}>
                       Clear & Reload
                     </Button>
                   </div>

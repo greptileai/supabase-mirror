@@ -301,6 +301,7 @@ allow_list = [
     "RedwoodJS",
     "Refine",
     "Roboflow",
+    "Rollup",
     "SaaS",
     "[Ss]avepoint",
     "SDKs",

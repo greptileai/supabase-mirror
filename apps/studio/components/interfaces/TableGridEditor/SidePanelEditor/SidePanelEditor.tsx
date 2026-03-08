@@ -694,6 +694,7 @@ export const SidePanelEditor = ({
           organizationSlug: org?.slug,
           generatedPolicies,
           onCreatePoliciesSuccess: () => track('rls_generated_policies_created'),
+          roleImpersonationState: getImpersonatedRoleState(),
         })
 
         if (isRealtimeEnabled) await updateTableRealtime(table, true)
@@ -871,7 +872,8 @@ export const SidePanelEditor = ({
             />,
             { id: toastId }
           )
-        }
+        },
+        getImpersonatedRoleState()
       )
       if (res.error) {
         toast.error(`Failed to import data: ${res.error.message}`, { id: toastId })
@@ -895,7 +897,8 @@ export const SidePanelEditor = ({
             />,
             { id: toastId }
           )
-        }
+        },
+        getImpersonatedRoleState()
       )
       if (res.error) {
         toast.error(`Failed to import data: ${res.error.message}`, { id: toastId })

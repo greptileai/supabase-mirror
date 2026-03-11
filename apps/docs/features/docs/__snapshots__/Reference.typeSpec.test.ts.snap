@@ -8968,6 +8968,7 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         },
         "comment": {
           "shortText": "Updates the user data. Changes are applied directly without confirmation flows.",
+          "text": "**Important:** This is a server-side operation and does **not** trigger client-side\\n\`onAuthStateChange\` listeners. The admin API has no connection to client state.\\n\\nTo sync changes to the client after calling this method:\\n1. On the client, call \`supabase.auth.refreshSession()\` to fetch the updated user data\\n2. This will trigger the \`TOKEN_REFRESHED\` event and notify all listeners",
           "examples": [
             {
               "id": "example-1",
@@ -42569,6 +42570,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "PostgrestQueryBuilder"
           }
         },
+        "comment": {
+          "shortText": "Perform a query on a table or a view."
+        },
         "altSignatures": [
           {
             "params": [
@@ -52471,6 +52475,7 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         },
         "comment": {
           "shortText": "Updates the user data. Changes are applied directly without confirmation flows.",
+          "text": "**Important:** This is a server-side operation and does **not** trigger client-side\\n\`onAuthStateChange\` listeners. The admin API has no connection to client state.\\n\\nTo sync changes to the client after calling this method:\\n1. On the client, call \`supabase.auth.refreshSession()\` to fetch the updated user data\\n2. This will trigger the \`TOKEN_REFRESHED\` event and notify all listeners",
           "examples": [
             {
               "id": "example-1",
@@ -79916,6 +79921,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "PostgrestQueryBuilder"
           }
         },
+        "comment": {
+          "shortText": "Perform a query on a table or a view."
+        },
         "altSignatures": [
           {
             "params": [
@@ -80352,6 +80360,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Only relevant for jsonb, array, and range columns. Match only rows where\\nevery element appearing in \`column\` is contained by \`value\`."
+        },
         "altSignatures": [
           {
             "params": [
@@ -80450,6 +80461,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Only relevant for jsonb, array, and range columns. Match only rows where\\n\`column\` contains every element appearing in \`value\`."
         },
         "altSignatures": [
           {
@@ -80790,6 +80804,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Match only rows which satisfy the filter. This is an escape hatch - you\\nshould use the specific filter methods wherever possible.\\n\\nUnlike most filters, \`opearator\` and \`value\` are used as-is and need to\\nfollow [PostgREST\\nsyntax](https://postgrest.org/en/stable/api.html#operators). You also need\\nto make sure they are properly sanitized."
+        },
         "altSignatures": [
           {
             "params": [
@@ -80861,6 +80878,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Match only rows where \`column\` is greater than \`value\`."
+        },
         "altSignatures": [
           {
             "params": [
@@ -80912,6 +80932,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Match only rows where \`column\` is greater than or equal to \`value\`."
+        },
         "altSignatures": [
           {
             "params": [
@@ -80962,6 +80985,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows where \`column\` matches \`pattern\` case-insensitively."
         },
         "altSignatures": [
           {
@@ -81016,6 +81042,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows where \`column\` matches all of \`patterns\` case-insensitively."
         },
         "altSignatures": [
           {
@@ -81073,6 +81102,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows where \`column\` matches any of \`patterns\` case-insensitively."
         },
         "altSignatures": [
           {
@@ -81156,6 +81188,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows where \`column\` IS \`value\`.\\n\\nFor non-boolean columns, this is only relevant for checking if the value of\\n\`column\` is NULL by setting \`value\` to \`null\`.\\n\\nFor boolean columns, you can also set \`value\` to \`true\` or \`false\` and it\\nwill behave the same way as \`.eq()\`."
         },
         "altSignatures": [
           {
@@ -81247,6 +81282,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Match only rows where \`column\` matches \`pattern\` case-sensitively."
+        },
         "altSignatures": [
           {
             "params": [
@@ -81300,6 +81338,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows where \`column\` matches all of \`patterns\` case-sensitively."
         },
         "altSignatures": [
           {
@@ -81357,6 +81398,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows where \`column\` matches any of \`patterns\` case-sensitively."
         },
         "altSignatures": [
           {
@@ -81469,6 +81513,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Match only rows where \`column\` is less than \`value\`."
+        },
         "altSignatures": [
           {
             "params": [
@@ -81519,6 +81566,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows where \`column\` is less than or equal to \`value\`."
         },
         "altSignatures": [
           {
@@ -81571,6 +81621,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows where each column in \`query\` keys is equal to its\\nassociated value. Shorthand for multiple \`.eq()\`s."
         },
         "altSignatures": [
           {
@@ -81691,6 +81744,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows which doesn't satisfy the filter.\\n\\nUnlike most filters, \`opearator\` and \`value\` are used as-is and need to\\nfollow [PostgREST\\nsyntax](https://postgrest.org/en/stable/api.html#operators). You also need\\nto make sure they are properly sanitized."
         },
         "altSignatures": [
           {
@@ -81865,6 +81921,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Order the query result by \`column\`.\\n\\nYou can call this method multiple times to order by multiple columns.\\n\\nYou can order referenced tables, but it only affects the ordering of the\\nparent table if you use \`!inner\` in the query."
         },
         "altSignatures": [
           {
@@ -82061,6 +82120,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Only relevant for array and range columns. Match only rows where\\n\`column\` and \`value\` have an element in common."
+        },
         "altSignatures": [
           {
             "params": [
@@ -82211,6 +82273,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Only relevant for range columns. Match only rows where \`column\` is\\nmutually exclusive to \`range\` and there can be no element between the two\\nranges."
+        },
         "altSignatures": [
           {
             "params": [
@@ -82261,6 +82326,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Only relevant for range columns. Match only rows where every element in\\n\`column\` is greater than any element in \`range\`."
         },
         "altSignatures": [
           {
@@ -82313,6 +82381,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Only relevant for range columns. Match only rows where every element in\\n\`column\` is either contained in \`range\` or greater than any element in\\n\`range\`."
+        },
         "altSignatures": [
           {
             "params": [
@@ -82363,6 +82434,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Only relevant for range columns. Match only rows where every element in\\n\`column\` is less than any element in \`range\`."
         },
         "altSignatures": [
           {
@@ -82415,6 +82489,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Only relevant for range columns. Match only rows where every element in\\n\`column\` is either contained in \`range\` or less than any element in\\n\`range\`."
+        },
         "altSignatures": [
           {
             "params": [
@@ -82466,6 +82543,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "this"
           }
         },
+        "comment": {
+          "shortText": "Match only rows where \`column\` matches the PostgreSQL regex \`pattern\`\\ncase-insensitively (using the \`~*\` operator)."
+        },
         "altSignatures": [
           {
             "params": [
@@ -82516,6 +82596,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Match only rows where \`column\` matches the PostgreSQL regex \`pattern\`\\ncase-sensitively (using the \`~\` operator)."
         },
         "altSignatures": [
           {
@@ -82697,6 +82780,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Only relevant for text and tsvector columns. Match only rows where\\n\`column\` matches the query string in \`query\`."
         },
         "altSignatures": [
           {
@@ -83164,6 +83250,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "name": "PostgrestFilterBuilder"
           }
         },
+        "comment": {
+          "shortText": "Perform an INSERT into the table or view.\\n\\nBy default, inserted rows are not returned. To return it, chain the call\\nwith \`.select()\`."
+        },
         "altSignatures": [
           {
             "params": [
@@ -83294,7 +83383,8 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           }
         },
         "comment": {
-          "shortText": "Perform a SELECT query on the table or view."
+          "shortText": "Perform a SELECT query on the table or view.",
+          "text": "When using \`count\` with \`.range()\` or \`.limit()\`, the returned \`count\` is the total number of rows\\nthat match your filters, not the number of rows in the current page. Use this to build pagination UI."
         }
       },
       "@supabase/postgrest-js.PostgrestQueryBuilder.update": {
@@ -83418,6 +83508,21 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "nameOnly",
             "name": "PostgrestFilterBuilder"
           }
+        },
+        "comment": {
+          "shortText": "Perform an UPSERT on the table or view. Depending on the column(s) passed\\nto \`onConflict\`, \`.upsert()\` allows you to perform the equivalent of\\n\`.insert()\` if a row with the corresponding \`onConflict\` columns doesn't\\nexist, or if it does exist, perform an alternative action depending on\\n\`ignoreDuplicates\`.\\n\\nBy default, upserted rows are not returned. To return it, chain the call\\nwith \`.select()\`.",
+          "examples": [
+            {
+              "id": "upsert-a-single-row-using-a-unique-key",
+              "name": "Upsert a single row using a unique key",
+              "code": "\`\`\`ts\\n// Upserting a single row, overwriting based on the 'username' unique column\\nconst { data, error } = await supabase\\n  .from('users')\\n  .upsert({ username: 'supabot' }, { onConflict: 'username' })\\n\\n// Example response:\\n// {\\n//   data: [\\n//     { id: 4, message: 'bar', username: 'supabot' }\\n//   ],\\n//   error: null\\n// }\\n\`\`\`"
+            },
+            {
+              "id": "upsert-with-conflict-resolution-and-exact-row-counting",
+              "name": "Upsert with conflict resolution and exact row counting",
+              "code": "\`\`\`ts\\n// Upserting and returning exact count\\nconst { data, error, count } = await supabase\\n  .from('users')\\n  .upsert(\\n    {\\n      id: 3,\\n      message: 'foo',\\n      username: 'supabot'\\n    },\\n    {\\n      onConflict: 'username',\\n      count: 'exact'\\n    }\\n  )\\n\\n// Example response:\\n// {\\n//   data: [\\n//     {\\n//       id: 42,\\n//       handle: \\"saoirse\\",\\n//       display_name: \\"Saoirse\\"\\n//     }\\n//   ],\\n//   count: 1,\\n//   error: null\\n// }\\n\`\`\`"
+            }
+          ]
         },
         "altSignatures": [
           {
@@ -83957,6 +84062,9 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
             "type": "intrinsic",
             "name": "this"
           }
+        },
+        "comment": {
+          "shortText": "Order the query result by \`column\`.\\n\\nYou can call this method multiple times to order by multiple columns.\\n\\nYou can order referenced tables, but it only affects the ordering of the\\nparent table if you use \`!inner\` in the query."
         },
         "altSignatures": [
           {
@@ -90090,6 +90198,7 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
               "text": ""
             }
           ],
+          "text": "This method provides a bridge between Supabase's bucket management and the standard\\nApache Iceberg REST Catalog API. The bucket name maps to the Iceberg warehouse parameter.\\nAll authentication and configuration is handled automatically using your Supabase credentials.\\n\\n**Error Handling**: Invalid bucket names throw immediately. All catalog\\noperations return \`{ data, error }\` where errors are \`IcebergError\` instances from iceberg-js.\\nUse helper methods like \`error.isNotFound()\` or check \`error.status\` for specific error handling.\\nUse \`.throwOnError()\` on the analytics client if you prefer exceptions for catalog operations.\\n\\n**Cleanup Operations**: When using \`dropTable\`, the \`purge: true\` option permanently\\ndeletes all table data. Without it, the table is marked as deleted but data remains.\\n\\n**Library Dependency**: The returned catalog wraps \`IcebergRestCatalog\` from iceberg-js.\\nFor complete API documentation and advanced usage, refer to the\\n[iceberg-js documentation](https://supabase.github.io/iceberg-js/).",
           "examples": [
             {
               "id": "get-catalog-and-create-table",

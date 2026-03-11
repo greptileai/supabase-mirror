@@ -1,6 +1,7 @@
 import { MANAGED_BY } from 'lib/constants/infrastructure'
 import type { Organization } from 'types'
 import { cn, Tooltip, TooltipContent, TooltipTrigger } from 'ui'
+
 import { PARTNER_TO_NAME } from './PartnerManagedResource'
 
 interface PartnerIconProps {
@@ -91,7 +92,7 @@ function PartnerIcon({
       )
     }
 
-    const defaultTooltipText = `This organization is managed by ${PARTNER_TO_NAME[organization.managed_by]}`
+    const defaultTooltipText = `Organization managed by ${PARTNER_TO_NAME[organization.managed_by]}`
 
     return (
       <Tooltip>

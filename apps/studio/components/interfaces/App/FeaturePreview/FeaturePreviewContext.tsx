@@ -119,6 +119,15 @@ export const useIsPlatformWebhooksEnabled = () => {
   return platformWebhooksEnabled && flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_PLATFORM_WEBHOOKS]
 }
 
+export const useIsProjectOauthIntegrationsBannerEnabled = () => {
+  const { flags } = useFeaturePreviewContext()
+  const projectOauthIntegrationsBannerEnabled = useFlag('projectOauthIntegrationsBanner')
+  return (
+    projectOauthIntegrationsBannerEnabled &&
+    flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_PROJECT_OAUTH_INTEGRATIONS_BANNER]
+  )
+}
+
 export const useIsTableFilterBarEnabled = () => {
   const { flags } = useFeaturePreviewContext()
   return flags[LOCAL_STORAGE_KEYS.UI_PREVIEW_TABLE_FILTER_BAR]

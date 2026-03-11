@@ -29,6 +29,7 @@ import { RestoreFailedState } from './RestoreFailedState'
 import RestoringState from './RestoringState'
 import { UpgradingState } from './UpgradingState'
 import { CreateBranchModal } from '@/components/interfaces/BranchManagement/CreateBranchModal'
+import { ProjectOAuthIntegrationsBanner } from '@/components/layouts/AppLayout/ProjectOAuthIntegrationsBanner'
 import { ProjectAPIDocs } from '@/components/interfaces/ProjectAPIDocs/ProjectAPIDocs'
 import { ResourceExhaustionWarningBanner } from '@/components/ui/ResourceExhaustionWarningBanner/ResourceExhaustionWarningBanner'
 import { useCustomContent } from '@/hooks/custom-content/useCustomContent'
@@ -205,6 +206,7 @@ export const ProjectLayout = forwardRef<HTMLDivElement, PropsWithChildren<Projec
                   </div>
                 ) : (
                   <ContentWrapper isLoading={isLoading} isBlocking={isBlocking}>
+                    <ProjectOAuthIntegrationsBanner />
                     <ResourceExhaustionWarningBanner />
                     {children}
                   </ContentWrapper>

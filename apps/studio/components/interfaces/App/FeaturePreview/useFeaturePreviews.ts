@@ -18,6 +18,7 @@ export const useFeaturePreviews = (): FeaturePreview[] => {
   const tableEditorNewFilterBar = useFlag('tableEditorNewFilterBar')
   const pgDeltaDiffEnabled = useFlag('pgdeltaDiff')
   const platformWebhooksEnabled = useFlag('platformWebhooks')
+  const projectOauthIntegrationsBannerEnabled = useFlag('projectOauthIntegrationsBanner')
 
   return [
     {
@@ -65,6 +66,15 @@ export const useFeaturePreviews = (): FeaturePreview[] => {
       isPlatformOnly: true,
       isDefaultOptIn: false,
       enabled: platformWebhooksEnabled,
+    },
+    {
+      key: LOCAL_STORAGE_KEYS.UI_PREVIEW_PROJECT_OAUTH_INTEGRATIONS_BANNER,
+      name: 'Connected apps banner',
+      discussionsUrl: undefined,
+      isNew: true,
+      isPlatformOnly: true,
+      isDefaultOptIn: false,
+      enabled: projectOauthIntegrationsBannerEnabled,
     },
     {
       key: LOCAL_STORAGE_KEYS.UI_PREVIEW_API_SIDE_PANEL,

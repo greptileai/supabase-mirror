@@ -100,6 +100,9 @@ vi.mock('@/components/interfaces/ProjectAPIDocs/ProjectAPIDocs', () => ({
 vi.mock('@/components/ui/ResourceExhaustionWarningBanner/ResourceExhaustionWarningBanner', () => ({
   ResourceExhaustionWarningBanner: () => null,
 }))
+vi.mock('@/components/layouts/AppLayout/ProjectOAuthIntegrationsBanner', () => ({
+  ProjectOAuthIntegrationsBanner: () => null,
+}))
 
 vi.mock('@/hooks/custom-content/useCustomContent', () => ({
   useCustomContent: () => ({ appTitle: 'Supabase' }),

@@ -23,6 +23,7 @@ import { AdvisorRulesPreview } from './AdvisorRulesPreview'
 import { APISidePanelPreview } from './APISidePanelPreview'
 import { Branching2Preview } from './Branching2Preview'
 import { CLSPreview } from './CLSPreview'
+import { ConnectedAppsBannerPreview } from './ConnectedAppsBannerPreview'
 import { useFeaturePreviewContext, useFeaturePreviewModal } from './FeaturePreviewContext'
 import { PlatformWebhooksPreview } from './PlatformWebhooksPreview'
 import { PgDeltaDiffPreview } from './PgDeltaDiffPreview'
@@ -44,6 +45,7 @@ const FEATURE_PREVIEW_KEY_TO_CONTENT: {
   [LOCAL_STORAGE_KEYS.UI_PREVIEW_QUEUE_OPERATIONS]: <QueueOperationsPreview />,
   [LOCAL_STORAGE_KEYS.UI_PREVIEW_TABLE_FILTER_BAR]: <TableFilterBarPreview />,
   [LOCAL_STORAGE_KEYS.UI_PREVIEW_PLATFORM_WEBHOOKS]: <PlatformWebhooksPreview />,
+  [LOCAL_STORAGE_KEYS.UI_PREVIEW_PROJECT_OAUTH_INTEGRATIONS_BANNER]: <ConnectedAppsBannerPreview />,
 }
 
 export const FeaturePreviewModal = () => {

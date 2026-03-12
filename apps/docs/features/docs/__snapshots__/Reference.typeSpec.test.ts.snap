@@ -36814,7 +36814,38 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           }
         },
         "comment": {
-          "shortText": "Creates a new user.\\n\\nBe aware that if a user account exists in the system you may get back an\\nerror message that attempts to hide this information from the user.\\nThis method has support for PKCE via email signups. The PKCE flow cannot be used when autoconfirm is enabled."
+          "shortText": "Creates a new user.\\n\\nBe aware that if a user account exists in the system you may get back an\\nerror message that attempts to hide this information from the user.\\nThis method has support for PKCE via email signups. The PKCE flow cannot be used when autoconfirm is enabled.",
+          "text": "- By default, the user needs to verify their email address before logging in. To turn this off, disable **Confirm email** in [your project](/dashboard/project/_/auth/providers).\\n- **Confirm email** determines if users need to confirm their email address after signing up.\\n  - If **Confirm email** is enabled, a \`user\` is returned but \`session\` is null.\\n  - If **Confirm email** is disabled, both a \`user\` and a \`session\` are returned.\\n- When the user confirms their email address, they are redirected to the [\`SITE_URL\`](/docs/guides/auth/redirect-urls#use-wildcards-in-redirect-urls) by default. You can modify your \`SITE_URL\` or add additional redirect URLs in [your project](/dashboard/project/_/auth/url-configuration).\\n- If signUp() is called for an existing confirmed user:\\n  - When both **Confirm email** and **Confirm phone** (even when phone provider is disabled) are enabled in [your project](/dashboard/project/_/auth/providers), an obfuscated/fake user object is returned.\\n  - When either **Confirm email** or **Confirm phone** (even when phone provider is disabled) is disabled, the error message, \`User already registered\` is returned.\\n- To fetch the currently logged-in user, refer to [\`getUser()\`](/docs/reference/javascript/auth-getuser).",
+          "examples": [
+            {
+              "id": "sign-up-with-an-email-and-password",
+              "name": "Sign up with an email and password",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp({\\n  email: 'example@email.com',\\n  password: 'example-password',\\n})\\n\`\`\`",
+              "response": "\`\`\`json\\n// Some fields may be null if \\"confirm email\\" is enabled.\\n{\\n  \\"data\\": {\\n    \\"user\\": {\\n      \\"id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n      \\"aud\\": \\"authenticated\\",\\n      \\"role\\": \\"authenticated\\",\\n      \\"email\\": \\"example@email.com\\",\\n      \\"email_confirmed_at\\": \\"2024-01-01T00:00:00Z\\",\\n      \\"phone\\": \\"\\",\\n      \\"last_sign_in_at\\": \\"2024-01-01T00:00:00Z\\",\\n      \\"app_metadata\\": {\\n        \\"provider\\": \\"email\\",\\n        \\"providers\\": [\\n          \\"email\\"\\n        ]\\n      },\\n      \\"user_metadata\\": {},\\n      \\"identities\\": [\\n        {\\n          \\"identity_id\\": \\"22222222-2222-2222-2222-222222222222\\",\\n          \\"id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n          \\"user_id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n          \\"identity_data\\": {\\n            \\"email\\": \\"example@email.com\\",\\n            \\"email_verified\\": false,\\n            \\"phone_verified\\": false,\\n            \\"sub\\": \\"11111111-1111-1111-1111-111111111111\\"\\n          },\\n          \\"provider\\": \\"email\\",\\n          \\"last_sign_in_at\\": \\"2024-01-01T00:00:00Z\\",\\n          \\"created_at\\": \\"2024-01-01T00:00:00Z\\",\\n          \\"updated_at\\": \\"2024-01-01T00:00:00Z\\",\\n          \\"email\\": \\"example@email.com\\"\\n        }\\n      ],\\n      \\"created_at\\": \\"2024-01-01T00:00:00Z\\",\\n      \\"updated_at\\": \\"2024-01-01T00:00:00Z\\"\\n    },\\n    \\"session\\": {\\n      \\"access_token\\": \\"<ACCESS_TOKEN>\\",\\n      \\"token_type\\": \\"bearer\\",\\n      \\"expires_in\\": 3600,\\n      \\"expires_at\\": 1700000000,\\n      \\"refresh_token\\": \\"<REFRESH_TOKEN>\\",\\n      \\"user\\": {\\n        \\"id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n        \\"aud\\": \\"authenticated\\",\\n        \\"role\\": \\"authenticated\\",\\n        \\"email\\": \\"example@email.com\\",\\n        \\"email_confirmed_at\\": \\"2024-01-01T00:00:00Z\\",\\n        \\"phone\\": \\"\\",\\n        \\"last_sign_in_at\\": \\"2024-01-01T00:00:00Z\\",\\n        \\"app_metadata\\": {\\n          \\"provider\\": \\"email\\",\\n          \\"providers\\": [\\n            \\"email\\"\\n          ]\\n        },\\n        \\"user_metadata\\": {},\\n        \\"identities\\": [\\n          {\\n            \\"identity_id\\": \\"22222222-2222-2222-2222-222222222222\\",\\n            \\"id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n            \\"user_id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n            \\"identity_data\\": {\\n              \\"email\\": \\"example@email.com\\",\\n              \\"email_verified\\": false,\\n              \\"phone_verified\\": false,\\n              \\"sub\\": \\"11111111-1111-1111-1111-111111111111\\"\\n            },\\n            \\"provider\\": \\"email\\",\\n            \\"last_sign_in_at\\": \\"2024-01-01T00:00:00Z\\",\\n            \\"created_at\\": \\"2024-01-01T00:00:00Z\\",\\n            \\"updated_at\\": \\"2024-01-01T00:00:00Z\\",\\n            \\"email\\": \\"example@email.com\\"\\n          }\\n        ],\\n        \\"created_at\\": \\"2024-01-01T00:00:00Z\\",\\n        \\"updated_at\\": \\"2024-01-01T00:00:00Z\\"\\n      }\\n    }\\n  },\\n  \\"error\\": null\\n}\\n\`\`\`"
+            },
+            {
+              "id": "sign-up-with-a-phone-number-and-password-sms",
+              "name": "Sign up with a phone number and password (SMS)",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp({\\n  phone: '123456789',\\n  password: 'example-password',\\n  options: {\\n    channel: 'sms'\\n  }\\n})\\n\`\`\`"
+            },
+            {
+              "id": "sign-up-with-a-phone-number-and-password-whatsapp",
+              "name": "Sign up with a phone number and password (whatsapp)",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp({\\n  phone: '123456789',\\n  password: 'example-password',\\n  options: {\\n    channel: 'whatsapp'\\n  }\\n})\\n\`\`\`",
+              "description": "The user will be sent a WhatsApp message which contains a OTP. By default, a given user can only request a OTP once every 60 seconds. Note that a user will need to have a valid WhatsApp account that is linked to Twilio in order to use this feature."
+            },
+            {
+              "id": "sign-up-with-additional-user-metadata",
+              "name": "Sign up with additional user metadata",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp(\\n  {\\n    email: 'example@email.com',\\n    password: 'example-password',\\n    options: {\\n      data: {\\n        first_name: 'John',\\n        age: 27,\\n      }\\n    }\\n  }\\n)\\n\`\`\`"
+            },
+            {
+              "id": "sign-up-with-a-redirect-url",
+              "name": "Sign up with a redirect URL",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp(\\n  {\\n    email: 'example@email.com',\\n    password: 'example-password',\\n    options: {\\n      emailRedirectTo: 'https://example.com/welcome'\\n    }\\n  }\\n)\\n\`\`\`",
+              "description": "- See [redirect URLs and wildcards](/docs/guides/auth/redirect-urls#use-wildcards-in-redirect-urls) to add additional redirect URLs to your project."
+            }
+          ]
         }
       },
       "@supabase/supabase-js.GoTrueClient.startAutoRefresh": {
@@ -39290,6 +39321,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
               "id": "example-1",
               "name": "Example 1",
               "code": "\`\`\`ts\\nimport RealtimeClient from '@supabase/realtime-js'\\n\\nconst client = new RealtimeClient('https://xyzcompany.supabase.co/realtime/v1', {\\n  params: { apikey: 'public-anon-key' },\\n})\\nconst channel = new RealtimeChannel('realtime:public:messages', { config: {} }, client)\\n\`\`\`"
+            },
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nimport RealtimeClient from '@supabase/realtime-js'\\n\\nconst client = new RealtimeClient('https://xyzcompany.supabase.co/realtime/v1', {\\n  params: { apikey: 'public-anon-key' },\\n})\\nconst channel = new RealtimeChannel('realtime:public:messages', { config: {} }, client)\\n\`\`\`"
             }
           ]
         }
@@ -39328,6 +39364,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         "comment": {
           "shortText": "Creates a Presence helper that keeps the local presence state in sync with the server.",
           "examples": [
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nconst presence = new RealtimePresence(channel)\\n\\nchannel.on('presence', ({ event, key }) => {\\n  console.log(\`Presence \${event} on \${key}\`)\\n})\\n\`\`\`"
+            },
             {
               "id": "example-1",
               "name": "Example 1",
@@ -39561,6 +39602,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         "comment": {
           "shortText": "Initializes the Socket.",
           "examples": [
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nimport RealtimeClient from '@supabase/realtime-js'\\n\\nconst client = new RealtimeClient('https://xyzcompany.supabase.co/realtime/v1', {\\n  params: { apikey: 'public-anon-key' },\\n})\\nclient.connect()\\n\`\`\`"
+            },
             {
               "id": "example-1",
               "name": "Example 1",
@@ -41627,7 +41673,21 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           }
         },
         "comment": {
-          "shortText": "Sends a message into the channel."
+          "shortText": "Sends a message into the channel.",
+          "text": "- When using REST you don't need to subscribe to the channel\\n- REST calls are only available from 2.37.0 onwards",
+          "examples": [
+            {
+              "id": "send-a-message-via-websocket",
+              "name": "Send a message via websocket",
+              "code": "\`\`\`js\\nsupabase\\n  .channel('room1')\\n  .subscribe((status) => {\\n    if (status === 'SUBSCRIBED') {\\n      channel.send({\\n        type: 'broadcast',\\n        event: 'cursor-pos',\\n        payload: { x: Math.random(), y: Math.random() },\\n      })\\n    }\\n  })\\n\`\`\`",
+              "response": "\`\`\`js\\nok | timed out | error\\n\`\`\`"
+            },
+            {
+              "id": "send-a-message-via-rest",
+              "name": "Send a message via REST",
+              "code": "\`\`\`js\\nsupabase\\n  .channel('room1')\\n  .httpSend('cursor-pos', { x: Math.random(), y: Math.random() })\\n\`\`\`"
+            }
+          ]
         }
       },
       "@supabase/supabase-js.RealtimeChannel.subscribe": {
@@ -41679,7 +41739,7 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           }
         },
         "comment": {
-          "shortText": "Subscribe registers your client with the server"
+          "shortText": "Subscribe registers your client with the server  *"
         }
       },
       "@supabase/supabase-js.RealtimeChannel.teardown": {
@@ -42427,9 +42487,48 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           "shortText": "Create a new client for use in the browser.",
           "examples": [
             {
-              "id": "example-1",
-              "name": "Example 1",
-              "code": "\`\`\`ts\\nimport { createClient } from '@supabase/supabase-js'\\n\\nconst supabase = createClient('https://xyzcompany.supabase.co', 'public-anon-key')\\nconst { data } = await supabase.from('profiles').select('*')\\n\`\`\`"
+              "id": "creating-a-client",
+              "name": "Creating a client",
+              "code": "\`\`\`js\\nimport { createClient } from '@supabase/supabase-js'\\n\\n// Create a single supabase client for interacting with your database\\nconst supabase = createClient('https://xyzcompany.supabase.co', 'publishable-or-anon-key')\\n\`\`\`"
+            },
+            {
+              "id": "with-a-custom-domain",
+              "name": "With a custom domain",
+              "code": "\`\`\`js\\nimport { createClient } from '@supabase/supabase-js'\\n\\n// Use a custom domain as the supabase URL\\nconst supabase = createClient('https://my-custom-domain.com', 'publishable-or-anon-key')\\n\`\`\`"
+            },
+            {
+              "id": "with-additional-parameters",
+              "name": "With additional parameters",
+              "code": "\`\`\`js\\nimport { createClient } from '@supabase/supabase-js'\\n\\nconst options = {\\n  db: {\\n    schema: 'public',\\n  },\\n  auth: {\\n    autoRefreshToken: true,\\n    persistSession: true,\\n    detectSessionInUrl: true\\n  },\\n  global: {\\n    headers: { 'x-my-custom-header': 'my-app-name' },\\n  },\\n}\\nconst supabase = createClient(\\"https://xyzcompany.supabase.co\\", \\"publishable-or-anon-key\\", options)\\n\`\`\`"
+            },
+            {
+              "id": "with-custom-schemas",
+              "name": "With custom schemas",
+              "code": "\`\`\`js\\nimport { createClient } from '@supabase/supabase-js'\\n\\nconst supabase = createClient('https://xyzcompany.supabase.co', 'publishable-or-anon-key', {\\n  // Provide a custom schema. Defaults to \\"public\\".\\n  db: { schema: 'other_schema' }\\n})\\n\`\`\`",
+              "description": "By default the API server points to the \`public\` schema. You can enable other database schemas within the Dashboard.\\nGo to [Settings > API > Exposed schemas](/dashboard/project/_/settings/api) and add the schema which you want to expose to the API.\\n\\nNote: each client connection can only access a single schema, so the code above can access the \`other_schema\` schema but cannot access the \`public\` schema."
+            },
+            {
+              "id": "custom-fetch-implementation",
+              "name": "Custom fetch implementation",
+              "code": "\`\`\`js\\nimport { createClient } from '@supabase/supabase-js'\\n\\nconst supabase = createClient('https://xyzcompany.supabase.co', 'publishable-or-anon-key', {\\n  global: { fetch: fetch.bind(globalThis) }\\n})\\n\`\`\`",
+              "description": "\`supabase-js\` uses the [\`cross-fetch\`](https://www.npmjs.com/package/cross-fetch) library to make HTTP requests,\\nbut an alternative \`fetch\` implementation can be provided as an option.\\nThis is most useful in environments where \`cross-fetch\` is not compatible (for instance Cloudflare Workers)."
+            },
+            {
+              "id": "react-native-options-with-asyncstorage",
+              "name": "React Native options with AsyncStorage",
+              "code": "\`\`\`js\\nimport 'react-native-url-polyfill/auto'\\nimport { createClient } from '@supabase/supabase-js'\\nimport AsyncStorage from \\"@react-native-async-storage/async-storage\\";\\n\\nconst supabase = createClient(\\"https://xyzcompany.supabase.co\\", \\"publishable-or-anon-key\\", {\\n  auth: {\\n    storage: AsyncStorage,\\n    autoRefreshToken: true,\\n    persistSession: true,\\n    detectSessionInUrl: false,\\n  },\\n});\\n\`\`\`",
+              "description": "For React Native we recommend using \`AsyncStorage\` as the storage implementation for Supabase Auth."
+            },
+            {
+              "id": "react-native-options-with-expo-securestore",
+              "name": "React Native options with Expo SecureStore",
+              "code": "\`\`\`ts\\nimport 'react-native-url-polyfill/auto'\\nimport { createClient } from '@supabase/supabase-js'\\nimport AsyncStorage from '@react-native-async-storage/async-storage';\\nimport * as SecureStore from 'expo-secure-store';\\nimport * as aesjs from 'aes-js';\\nimport 'react-native-get-random-values';\\n\\n// As Expo's SecureStore does not support values larger than 2048\\n// bytes, an AES-256 key is generated and stored in SecureStore, while\\n// it is used to encrypt/decrypt values stored in AsyncStorage.\\nclass LargeSecureStore {\\n  private async _encrypt(key: string, value: string) {\\n    const encryptionKey = crypto.getRandomValues(new Uint8Array(256 / 8));\\n\\n    const cipher = new aesjs.ModeOfOperation.ctr(encryptionKey, new aesjs.Counter(1));\\n    const encryptedBytes = cipher.encrypt(aesjs.utils.utf8.toBytes(value));\\n\\n    await SecureStore.setItemAsync(key, aesjs.utils.hex.fromBytes(encryptionKey));\\n\\n    return aesjs.utils.hex.fromBytes(encryptedBytes);\\n  }\\n\\n  private async _decrypt(key: string, value: string) {\\n    const encryptionKeyHex = await SecureStore.getItemAsync(key);\\n    if (!encryptionKeyHex) {\\n      return encryptionKeyHex;\\n    }\\n\\n    const cipher = new aesjs.ModeOfOperation.ctr(aesjs.utils.hex.toBytes(encryptionKeyHex), new aesjs.Counter(1));\\n    const decryptedBytes = cipher.decrypt(aesjs.utils.hex.toBytes(value));\\n\\n    return aesjs.utils.utf8.fromBytes(decryptedBytes);\\n  }\\n\\n  async getItem(key: string) {\\n    const encrypted = await AsyncStorage.getItem(key);\\n    if (!encrypted) { return encrypted; }\\n\\n    return await this._decrypt(key, encrypted);\\n  }\\n\\n  async removeItem(key: string) {\\n    await AsyncStorage.removeItem(key);\\n    await SecureStore.deleteItemAsync(key);\\n  }\\n\\n  async setItem(key: string, value: string) {\\n    const encrypted = await this._encrypt(key, value);\\n\\n    await AsyncStorage.setItem(key, encrypted);\\n  }\\n}\\n\\nconst supabase = createClient(\\"https://xyzcompany.supabase.co\\", \\"publishable-or-anon-key\\", {\\n  auth: {\\n    storage: new LargeSecureStore(),\\n    autoRefreshToken: true,\\n    persistSession: true,\\n    detectSessionInUrl: false,\\n  },\\n});\\n\`\`\`",
+              "description": "If you wish to encrypt the user's session information, you can use \`aes-js\` and store the encryption key in Expo SecureStore.\\nThe \`aes-js\` library, a reputable JavaScript-only implementation of the AES encryption algorithm in CTR mode.\\nA new 256-bit encryption key is generated using the \`react-native-get-random-values\` library.\\nThis key is stored inside Expo's SecureStore, while the value is encrypted and placed inside AsyncStorage.\\n\\nPlease make sure that:\\n- You keep the \`expo-secure-store\`, \`aes-js\` and \`react-native-get-random-values\` libraries up-to-date.\\n- Choose the correct [\`SecureStoreOptions\`](https://docs.expo.dev/versions/latest/sdk/securestore/#securestoreoptions) for your app's needs.\\n  E.g. [\`SecureStore.WHEN_UNLOCKED\`](https://docs.expo.dev/versions/latest/sdk/securestore/#securestorewhen_unlocked) regulates when the data can be accessed.\\n- Carefully consider optimizations or other modifications to the above example, as those can lead to introducing subtle security vulnerabilities."
+            },
+            {
+              "id": "with-a-database-query",
+              "name": "With a database query",
+              "code": "\`\`\`ts\\nimport { createClient } from '@supabase/supabase-js'\\n\\nconst supabase = createClient('https://xyzcompany.supabase.co', 'public-anon-key')\\n\\nconst { data } = await supabase.from('profiles').select('*')\\n\`\`\`"
             }
           ]
         }
@@ -43096,6 +43195,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
               "id": "example-1",
               "name": "Example 1",
               "code": "\`\`\`ts\\nconst socket = WebSocketFactory.createWebSocket('wss://realtime.supabase.co/socket')\\n\`\`\`"
+            },
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nconst socket = WebSocketFactory.createWebSocket('wss://realtime.supabase.co/socket')\\n\`\`\`"
             }
           ]
         }
@@ -43159,6 +43263,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
               "id": "example-1",
               "name": "Example 1",
               "code": "\`\`\`ts\\nconst WS = WebSocketFactory.getWebSocketConstructor()\\nconst socket = new WS('wss://realtime.supabase.co/socket')\\n\`\`\`"
+            },
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nconst WS = WebSocketFactory.getWebSocketConstructor()\\nconst socket = new WS('wss://realtime.supabase.co/socket')\\n\`\`\`"
             }
           ]
         }
@@ -43175,6 +43284,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         "comment": {
           "shortText": "Detects whether the runtime can establish WebSocket connections.",
           "examples": [
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nif (!WebSocketFactory.isWebSocketSupported()) {\\n  console.warn('Falling back to long polling')\\n}\\n\`\`\`"
+            },
             {
               "id": "example-1",
               "name": "Example 1",
@@ -77151,7 +77265,38 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           }
         },
         "comment": {
-          "shortText": "Creates a new user.\\n\\nBe aware that if a user account exists in the system you may get back an\\nerror message that attempts to hide this information from the user.\\nThis method has support for PKCE via email signups. The PKCE flow cannot be used when autoconfirm is enabled."
+          "shortText": "Creates a new user.\\n\\nBe aware that if a user account exists in the system you may get back an\\nerror message that attempts to hide this information from the user.\\nThis method has support for PKCE via email signups. The PKCE flow cannot be used when autoconfirm is enabled.",
+          "text": "- By default, the user needs to verify their email address before logging in. To turn this off, disable **Confirm email** in [your project](/dashboard/project/_/auth/providers).\\n- **Confirm email** determines if users need to confirm their email address after signing up.\\n  - If **Confirm email** is enabled, a \`user\` is returned but \`session\` is null.\\n  - If **Confirm email** is disabled, both a \`user\` and a \`session\` are returned.\\n- When the user confirms their email address, they are redirected to the [\`SITE_URL\`](/docs/guides/auth/redirect-urls#use-wildcards-in-redirect-urls) by default. You can modify your \`SITE_URL\` or add additional redirect URLs in [your project](/dashboard/project/_/auth/url-configuration).\\n- If signUp() is called for an existing confirmed user:\\n  - When both **Confirm email** and **Confirm phone** (even when phone provider is disabled) are enabled in [your project](/dashboard/project/_/auth/providers), an obfuscated/fake user object is returned.\\n  - When either **Confirm email** or **Confirm phone** (even when phone provider is disabled) is disabled, the error message, \`User already registered\` is returned.\\n- To fetch the currently logged-in user, refer to [\`getUser()\`](/docs/reference/javascript/auth-getuser).",
+          "examples": [
+            {
+              "id": "sign-up-with-an-email-and-password",
+              "name": "Sign up with an email and password",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp({\\n  email: 'example@email.com',\\n  password: 'example-password',\\n})\\n\`\`\`",
+              "response": "\`\`\`json\\n// Some fields may be null if \\"confirm email\\" is enabled.\\n{\\n  \\"data\\": {\\n    \\"user\\": {\\n      \\"id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n      \\"aud\\": \\"authenticated\\",\\n      \\"role\\": \\"authenticated\\",\\n      \\"email\\": \\"example@email.com\\",\\n      \\"email_confirmed_at\\": \\"2024-01-01T00:00:00Z\\",\\n      \\"phone\\": \\"\\",\\n      \\"last_sign_in_at\\": \\"2024-01-01T00:00:00Z\\",\\n      \\"app_metadata\\": {\\n        \\"provider\\": \\"email\\",\\n        \\"providers\\": [\\n          \\"email\\"\\n        ]\\n      },\\n      \\"user_metadata\\": {},\\n      \\"identities\\": [\\n        {\\n          \\"identity_id\\": \\"22222222-2222-2222-2222-222222222222\\",\\n          \\"id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n          \\"user_id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n          \\"identity_data\\": {\\n            \\"email\\": \\"example@email.com\\",\\n            \\"email_verified\\": false,\\n            \\"phone_verified\\": false,\\n            \\"sub\\": \\"11111111-1111-1111-1111-111111111111\\"\\n          },\\n          \\"provider\\": \\"email\\",\\n          \\"last_sign_in_at\\": \\"2024-01-01T00:00:00Z\\",\\n          \\"created_at\\": \\"2024-01-01T00:00:00Z\\",\\n          \\"updated_at\\": \\"2024-01-01T00:00:00Z\\",\\n          \\"email\\": \\"example@email.com\\"\\n        }\\n      ],\\n      \\"created_at\\": \\"2024-01-01T00:00:00Z\\",\\n      \\"updated_at\\": \\"2024-01-01T00:00:00Z\\"\\n    },\\n    \\"session\\": {\\n      \\"access_token\\": \\"<ACCESS_TOKEN>\\",\\n      \\"token_type\\": \\"bearer\\",\\n      \\"expires_in\\": 3600,\\n      \\"expires_at\\": 1700000000,\\n      \\"refresh_token\\": \\"<REFRESH_TOKEN>\\",\\n      \\"user\\": {\\n        \\"id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n        \\"aud\\": \\"authenticated\\",\\n        \\"role\\": \\"authenticated\\",\\n        \\"email\\": \\"example@email.com\\",\\n        \\"email_confirmed_at\\": \\"2024-01-01T00:00:00Z\\",\\n        \\"phone\\": \\"\\",\\n        \\"last_sign_in_at\\": \\"2024-01-01T00:00:00Z\\",\\n        \\"app_metadata\\": {\\n          \\"provider\\": \\"email\\",\\n          \\"providers\\": [\\n            \\"email\\"\\n          ]\\n        },\\n        \\"user_metadata\\": {},\\n        \\"identities\\": [\\n          {\\n            \\"identity_id\\": \\"22222222-2222-2222-2222-222222222222\\",\\n            \\"id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n            \\"user_id\\": \\"11111111-1111-1111-1111-111111111111\\",\\n            \\"identity_data\\": {\\n              \\"email\\": \\"example@email.com\\",\\n              \\"email_verified\\": false,\\n              \\"phone_verified\\": false,\\n              \\"sub\\": \\"11111111-1111-1111-1111-111111111111\\"\\n            },\\n            \\"provider\\": \\"email\\",\\n            \\"last_sign_in_at\\": \\"2024-01-01T00:00:00Z\\",\\n            \\"created_at\\": \\"2024-01-01T00:00:00Z\\",\\n            \\"updated_at\\": \\"2024-01-01T00:00:00Z\\",\\n            \\"email\\": \\"example@email.com\\"\\n          }\\n        ],\\n        \\"created_at\\": \\"2024-01-01T00:00:00Z\\",\\n        \\"updated_at\\": \\"2024-01-01T00:00:00Z\\"\\n      }\\n    }\\n  },\\n  \\"error\\": null\\n}\\n\`\`\`"
+            },
+            {
+              "id": "sign-up-with-a-phone-number-and-password-sms",
+              "name": "Sign up with a phone number and password (SMS)",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp({\\n  phone: '123456789',\\n  password: 'example-password',\\n  options: {\\n    channel: 'sms'\\n  }\\n})\\n\`\`\`"
+            },
+            {
+              "id": "sign-up-with-a-phone-number-and-password-whatsapp",
+              "name": "Sign up with a phone number and password (whatsapp)",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp({\\n  phone: '123456789',\\n  password: 'example-password',\\n  options: {\\n    channel: 'whatsapp'\\n  }\\n})\\n\`\`\`",
+              "description": "The user will be sent a WhatsApp message which contains a OTP. By default, a given user can only request a OTP once every 60 seconds. Note that a user will need to have a valid WhatsApp account that is linked to Twilio in order to use this feature."
+            },
+            {
+              "id": "sign-up-with-additional-user-metadata",
+              "name": "Sign up with additional user metadata",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp(\\n  {\\n    email: 'example@email.com',\\n    password: 'example-password',\\n    options: {\\n      data: {\\n        first_name: 'John',\\n        age: 27,\\n      }\\n    }\\n  }\\n)\\n\`\`\`"
+            },
+            {
+              "id": "sign-up-with-a-redirect-url",
+              "name": "Sign up with a redirect URL",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase.auth.signUp(\\n  {\\n    email: 'example@email.com',\\n    password: 'example-password',\\n    options: {\\n      emailRedirectTo: 'https://example.com/welcome'\\n    }\\n  }\\n)\\n\`\`\`",
+              "description": "- See [redirect URLs and wildcards](/docs/guides/auth/redirect-urls#use-wildcards-in-redirect-urls) to add additional redirect URLs to your project."
+            }
+          ]
         }
       },
       "@supabase/auth-js.GoTrueClient.startAutoRefresh": {
@@ -83251,7 +83396,37 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           }
         },
         "comment": {
-          "shortText": "Perform an INSERT into the table or view.\\n\\nBy default, inserted rows are not returned. To return it, chain the call\\nwith \`.select()\`."
+          "shortText": "Perform an INSERT into the table or view.\\n\\nBy default, inserted rows are not returned. To return it, chain the call\\nwith \`.select()\`.",
+          "examples": [
+            {
+              "id": "create-a-record",
+              "name": "Create a record",
+              "code": "\`\`\`ts\\nconst { error } = await supabase\\n  .from('countries')\\n  .insert({ id: 1, name: 'Mordor' })\\n\`\`\`",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  countries (id int8 primary key, name text);\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"status\\": 201,\\n  \\"statusText\\": \\"Created\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "create-a-record-and-return-it",
+              "name": "Create a record and return it",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('countries')\\n  .insert({ id: 1, name: 'Mordor' })\\n  .select()\\n\`\`\`",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  countries (id int8 primary key, name text);\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"id\\": 1,\\n      \\"name\\": \\"Mordor\\"\\n    }\\n  ],\\n  \\"status\\": 201,\\n  \\"statusText\\": \\"Created\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "bulk-create",
+              "name": "Bulk create",
+              "code": "\`\`\`ts\\nconst { error } = await supabase\\n  .from('countries')\\n  .insert([\\n    { id: 1, name: 'Mordor' },\\n    { id: 1, name: 'The Shire' },\\n  ])\\n\`\`\`",
+              "description": "A bulk create operation is handled in a single transaction.\\nIf any of the inserts fail, none of the rows are inserted.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  countries (id int8 primary key, name text);\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"error\\": {\\n    \\"code\\": \\"23505\\",\\n    \\"details\\": \\"Key (id)=(1) already exists.\\",\\n    \\"hint\\": null,\\n    \\"message\\": \\"duplicate key value violates unique constraint \\\\\\"countries_pkey\\\\\\"\\"\\n  },\\n  \\"status\\": 409,\\n  \\"statusText\\": \\"Conflict\\"\\n}\\n\`\`\`"
+            }
+          ]
         },
         "altSignatures": [
           {
@@ -83384,7 +83559,126 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         },
         "comment": {
           "shortText": "Perform a SELECT query on the table or view.",
-          "text": "When using \`count\` with \`.range()\` or \`.limit()\`, the returned \`count\` is the total number of rows\\nthat match your filters, not the number of rows in the current page. Use this to build pagination UI."
+          "text": "When using \`count\` with \`.range()\` or \`.limit()\`, the returned \`count\` is the total number of rows\\nthat match your filters, not the number of rows in the current page. Use this to build pagination UI.\\n\\n- By default, Supabase projects return a maximum of 1,000 rows. This setting can be changed in your project's [API settings](/dashboard/project/_/settings/api). It's recommended that you keep it low to limit the payload size of accidental or malicious requests. You can use \`range()\` queries to paginate through your data.\\n- \`select()\` can be combined with [Filters](/docs/reference/javascript/using-filters)\\n- \`select()\` can be combined with [Modifiers](/docs/reference/javascript/using-modifiers)\\n- \`apikey\` is a reserved keyword if you're using the [Supabase Platform](/docs/guides/platform) and [should be avoided as a column name](https://github.com/supabase/supabase/issues/5465). *",
+          "examples": [
+            {
+              "id": "getting-your-data",
+              "name": "Getting your data",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase\\n  .from('characters')\\n  .select()\\n\`\`\`",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  characters (id int8 primary key, name text);\\n\\ninsert into\\n  characters (id, name)\\nvalues\\n  (1, 'Harry'),\\n  (2, 'Frodo'),\\n  (3, 'Katniss');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"id\\": 1,\\n      \\"name\\": \\"Harry\\"\\n    },\\n    {\\n      \\"id\\": 2,\\n      \\"name\\": \\"Frodo\\"\\n    },\\n    {\\n      \\"id\\": 3,\\n      \\"name\\": \\"Katniss\\"\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "selecting-specific-columns",
+              "name": "Selecting specific columns",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase\\n  .from('characters')\\n  .select('name')\\n\`\`\`",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  characters (id int8 primary key, name text);\\n\\ninsert into\\n  characters (id, name)\\nvalues\\n  (1, 'Frodo'),\\n  (2, 'Harry'),\\n  (3, 'Katniss');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"name\\": \\"Frodo\\"\\n    },\\n    {\\n      \\"name\\": \\"Harry\\"\\n    },\\n    {\\n      \\"name\\": \\"Katniss\\"\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "query-referenced-tables",
+              "name": "Query referenced tables",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase\\n  .from('orchestral_sections')\\n  .select(\`\\n    name,\\n    instruments (\\n      name\\n    )\\n  \`)\\n\`\`\`",
+              "description": "If your database has foreign key relationships, you can query related tables too.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  orchestral_sections (id int8 primary key, name text);\\ncreate table\\n  instruments (\\n    id int8 primary key,\\n    section_id int8 not null references orchestral_sections,\\n    name text\\n  );\\n\\ninsert into\\n  orchestral_sections (id, name)\\nvalues\\n  (1, 'strings'),\\n  (2, 'woodwinds');\\ninsert into\\n  instruments (id, section_id, name)\\nvalues\\n  (1, 2, 'flute'),\\n  (2, 1, 'violin');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"name\\": \\"strings\\",\\n      \\"instruments\\": [\\n        {\\n          \\"name\\": \\"violin\\"\\n        }\\n      ]\\n    },\\n    {\\n      \\"name\\": \\"woodwinds\\",\\n      \\"instruments\\": [\\n        {\\n          \\"name\\": \\"flute\\"\\n        }\\n      ]\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "query-referenced-tables-with-spaces-in-their-names",
+              "name": "Query referenced tables with spaces in their names",
+              "code": "\`\`\`js\\nconst { data, error } = await supabase\\n  .from('orchestral sections')\\n  .select(\`\\n    name,\\n    \\"musical instruments\\" (\\n      name\\n    )\\n  \`)\\n\`\`\`",
+              "description": "If your table name contains spaces, you must use double quotes in the \`select\` statement to reference the table.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  \\"orchestral sections\\" (id int8 primary key, name text);\\ncreate table\\n  \\"musical instruments\\" (\\n    id int8 primary key,\\n    section_id int8 not null references \\"orchestral sections\\",\\n    name text\\n  );\\n\\ninsert into\\n  \\"orchestral sections\\" (id, name)\\nvalues\\n  (1, 'strings'),\\n  (2, 'woodwinds');\\ninsert into\\n  \\"musical instruments\\" (id, section_id, name)\\nvalues\\n  (1, 2, 'flute'),\\n  (2, 1, 'violin');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"name\\": \\"strings\\",\\n      \\"musical instruments\\": [\\n        {\\n          \\"name\\": \\"violin\\"\\n        }\\n      ]\\n    },\\n    {\\n      \\"name\\": \\"woodwinds\\",\\n      \\"musical instruments\\": [\\n        {\\n          \\"name\\": \\"flute\\"\\n        }\\n      ]\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "query-referenced-tables-through-a-join-table",
+              "name": "Query referenced tables through a join table",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('users')\\n  .select(\`\\n    name,\\n    teams (\\n      name\\n    )\\n  \`)\\n  \\n\`\`\`",
+              "description": "If you're in a situation where your tables are **NOT** directly\\nrelated, but instead are joined by a _join table_, you can still use\\nthe \`select()\` method to query the related data. The join table needs\\nto have the foreign keys as part of its composite primary key.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  users (\\n    id int8 primary key,\\n    name text\\n  );\\ncreate table\\n  teams (\\n    id int8 primary key,\\n    name text\\n  );\\n-- join table\\ncreate table\\n  users_teams (\\n    user_id int8 not null references users,\\n    team_id int8 not null references teams,\\n    -- both foreign keys must be part of a composite primary key\\n    primary key (user_id, team_id)\\n  );\\n\\ninsert into\\n  users (id, name)\\nvalues\\n  (1, 'Kiran'),\\n  (2, 'Evan');\\ninsert into\\n  teams (id, name)\\nvalues\\n  (1, 'Green'),\\n  (2, 'Blue');\\ninsert into\\n  users_teams (user_id, team_id)\\nvalues\\n  (1, 1),\\n  (1, 2),\\n  (2, 2);\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n  {\\n    \\"data\\": [\\n      {\\n        \\"name\\": \\"Kiran\\",\\n        \\"teams\\": [\\n          {\\n            \\"name\\": \\"Green\\"\\n          },\\n          {\\n            \\"name\\": \\"Blue\\"\\n          }\\n        ]\\n      },\\n      {\\n        \\"name\\": \\"Evan\\",\\n        \\"teams\\": [\\n          {\\n            \\"name\\": \\"Blue\\"\\n          }\\n        ]\\n      }\\n    ],\\n    \\"status\\": 200,\\n    \\"statusText\\": \\"OK\\"\\n  }\\n  \\n\`\`\`"
+            },
+            {
+              "id": "query-the-same-referenced-table-multiple-times",
+              "name": "Query the same referenced table multiple times",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('messages')\\n  .select(\`\\n    content,\\n    from:sender_id(name),\\n    to:receiver_id(name)\\n  \`)\\n\\n// To infer types, use the name of the table (in this case \`users\`) and\\n// the name of the foreign key constraint.\\nconst { data, error } = await supabase\\n  .from('messages')\\n  .select(\`\\n    content,\\n    from:users!messages_sender_id_fkey(name),\\n    to:users!messages_receiver_id_fkey(name)\\n  \`)\\n\`\`\`",
+              "description": "If you need to query the same referenced table twice, use the name of the\\njoined column to identify which join to use. You can also give each\\ncolumn an alias.",
+              "data": {
+                "sql": "\`\`\`sql\\n create table\\n users (id int8 primary key, name text);\\n\\n create table\\n   messages (\\n     sender_id int8 not null references users,\\n     receiver_id int8 not null references users,\\n     content text\\n   );\\n\\n insert into\\n   users (id, name)\\n values\\n   (1, 'Kiran'),\\n   (2, 'Evan');\\n\\n insert into\\n   messages (sender_id, receiver_id, content)\\n values\\n   (1, 2, '👋');\\n \`\`\`\\n\`\`\`\\n\\n@exampleResponse Query the same referenced table multiple times\\n\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"content\\": \\"👋\\",\\n      \\"from\\": {\\n        \\"name\\": \\"Kiran\\"\\n      },\\n      \\"to\\": {\\n        \\"name\\": \\"Evan\\"\\n      }\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`\\n\\n@exampleDescription Query nested foreign tables through a join table\\nYou can use the result of a joined table to gather data in\\nanother foreign table. With multiple references to the same foreign\\ntable you must specify the column on which to conduct the join.\\n\\n@example Query nested foreign tables through a join table\\n\`\`\`ts\\n  const { data, error } = await supabase\\n    .from('games')\\n    .select(\`\\n      game_id:id,\\n      away_team:teams!games_away_team_fkey (\\n        users (\\n          id,\\n          name\\n        )\\n      )\\n    \`)\\n  \\n\`\`\`\\n\\n@exampleSql Query nested foreign tables through a join table\\n\`\`\`sql\\n\`\`\`sql\\ncreate table\\n  users (\\n    id int8 primary key,\\n    name text\\n  );\\ncreate table\\n  teams (\\n    id int8 primary key,\\n    name text\\n  );\\n-- join table\\ncreate table\\n  users_teams (\\n    user_id int8 not null references users,\\n    team_id int8 not null references teams,\\n\\n    primary key (user_id, team_id)\\n  );\\ncreate table\\n  games (\\n    id int8 primary key,\\n    home_team int8 not null references teams,\\n    away_team int8 not null references teams,\\n    name text\\n  );\\n\\ninsert into users (id, name)\\nvalues\\n  (1, 'Kiran'),\\n  (2, 'Evan');\\ninsert into\\n  teams (id, name)\\nvalues\\n  (1, 'Green'),\\n  (2, 'Blue');\\ninsert into\\n  users_teams (user_id, team_id)\\nvalues\\n  (1, 1),\\n  (1, 2),\\n  (2, 2);\\ninsert into\\n  games (id, home_team, away_team, name)\\nvalues\\n  (1, 1, 2, 'Green vs Blue'),\\n  (2, 2, 1, 'Blue vs Green');\\n\`\`\`"
+              }
+            },
+            {
+              "id": "filtering-through-referenced-tables",
+              "name": "Filtering through referenced tables",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('instruments')\\n  .select('name, orchestral_sections(*)')\\n  .eq('orchestral_sections.name', 'percussion')\\n\`\`\`",
+              "description": "If the filter on a referenced table's column is not satisfied, the referenced\\ntable returns \`[]\` or \`null\` but the parent table is not filtered out.\\nIf you want to filter out the parent table rows, use the \`!inner\` hint",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  orchestral_sections (id int8 primary key, name text);\\ncreate table\\n  instruments (\\n    id int8 primary key,\\n    section_id int8 not null references orchestral_sections,\\n    name text\\n  );\\n\\ninsert into\\n  orchestral_sections (id, name)\\nvalues\\n  (1, 'strings'),\\n  (2, 'woodwinds');\\ninsert into\\n  instruments (id, section_id, name)\\nvalues\\n  (1, 2, 'flute'),\\n  (2, 1, 'violin');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"name\\": \\"flute\\",\\n      \\"orchestral_sections\\": null\\n    },\\n    {\\n      \\"name\\": \\"violin\\",\\n      \\"orchestral_sections\\": null\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "querying-referenced-table-with-count",
+              "name": "Querying referenced table with count",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('orchestral_sections')\\n  .select(\`*, instruments(count)\`)\\n\`\`\`",
+              "description": "You can get the number of rows in a related table by using the\\n**count** property.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table orchestral_sections (\\n  \\"id\\" \\"uuid\\" primary key default \\"extensions\\".\\"uuid_generate_v4\\"() not null,\\n  \\"name\\" text\\n);\\n\\ncreate table characters (\\n  \\"id\\" \\"uuid\\" primary key default \\"extensions\\".\\"uuid_generate_v4\\"() not null,\\n  \\"name\\" text,\\n  \\"section_id\\" \\"uuid\\" references public.orchestral_sections on delete cascade\\n);\\n\\nwith section as (\\n  insert into orchestral_sections (name)\\n  values ('strings') returning id\\n)\\ninsert into instruments (name, section_id) values\\n('violin', (select id from section)),\\n('viola', (select id from section)),\\n('cello', (select id from section)),\\n('double bass', (select id from section));\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n[\\n  {\\n    \\"id\\": \\"693694e7-d993-4360-a6d7-6294e325d9b6\\",\\n    \\"name\\": \\"strings\\",\\n    \\"instruments\\": [\\n      {\\n        \\"count\\": 4\\n      }\\n    ]\\n  }\\n]\\n\`\`\`"
+            },
+            {
+              "id": "querying-with-count-option",
+              "name": "Querying with count option",
+              "code": "\`\`\`ts\\nconst { count, error } = await supabase\\n  .from('characters')\\n  .select('*', { count: 'exact', head: true })\\n\`\`\`",
+              "description": "You can get the number of rows by using the\\n[count](/docs/reference/javascript/select#parameters) option.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  characters (id int8 primary key, name text);\\n\\ninsert into\\n  characters (id, name)\\nvalues\\n  (1, 'Luke'),\\n  (2, 'Leia'),\\n  (3, 'Han');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"count\\": 3,\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "querying-json-data",
+              "name": "Querying JSON data",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('users')\\n  .select(\`\\n    id, name,\\n    address->city\\n  \`)\\n\`\`\`",
+              "description": "You can select and filter data inside of\\n[JSON](/docs/guides/database/json) columns. Postgres offers some\\n[operators](/docs/guides/database/json#query-the-jsonb-data) for\\nquerying JSON data.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  users (\\n    id int8 primary key,\\n    name text,\\n    address jsonb\\n  );\\n\\ninsert into\\n  users (id, name, address)\\nvalues\\n  (1, 'Frodo', '{\\"city\\":\\"Hobbiton\\"}');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"id\\": 1,\\n      \\"name\\": \\"Frodo\\",\\n      \\"city\\": \\"Hobbiton\\"\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "querying-referenced-table-with-inner-join",
+              "name": "Querying referenced table with inner join",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('instruments')\\n  .select('name, orchestral_sections!inner(name)')\\n  .eq('orchestral_sections.name', 'woodwinds')\\n  .limit(1)\\n\`\`\`",
+              "description": "If you don't want to return the referenced table contents, you can leave the parenthesis empty.\\nLike \`.select('name, orchestral_sections!inner()')\`.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table orchestral_sections (\\n  \\"id\\" \\"uuid\\" primary key default \\"extensions\\".\\"uuid_generate_v4\\"() not null,\\n  \\"name\\" text\\n);\\n\\ncreate table instruments (\\n  \\"id\\" \\"uuid\\" primary key default \\"extensions\\".\\"uuid_generate_v4\\"() not null,\\n  \\"name\\" text,\\n  \\"section_id\\" \\"uuid\\" references public.orchestral_sections on delete cascade\\n);\\n\\nwith section as (\\n  insert into orchestral_sections (name)\\n  values ('woodwinds') returning id\\n)\\ninsert into instruments (name, section_id) values\\n('flute', (select id from section)),\\n('clarinet', (select id from section)),\\n('bassoon', (select id from section)),\\n('piccolo', (select id from section));\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"name\\": \\"flute\\",\\n      \\"orchestral_sections\\": {\\"name\\": \\"woodwinds\\"}\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "switching-schemas-per-query",
+              "name": "Switching schemas per query",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .schema('myschema')\\n  .from('mytable')\\n  .select()\\n\`\`\`",
+              "description": "In addition to setting the schema during initialization, you can also switch schemas on a per-query basis.\\nMake sure you've set up your [database privileges and API settings](/docs/guides/api/using-custom-schemas).",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate schema myschema;\\n\\ncreate table myschema.mytable (\\n  id uuid primary key default gen_random_uuid(),\\n  data text\\n);\\n\\ninsert into myschema.mytable (data) values ('mydata');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"id\\": \\"4162e008-27b0-4c0f-82dc-ccaeee9a624d\\",\\n      \\"data\\": \\"mydata\\"\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            }
+          ]
         }
       },
       "@supabase/postgrest-js.PostgrestQueryBuilder.update": {
@@ -83443,7 +83737,38 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           }
         },
         "comment": {
-          "shortText": "Perform an UPDATE on the table or view.\\n\\nBy default, updated rows are not returned. To return it, chain the call\\nwith \`.select()\` after filters."
+          "shortText": "Perform an UPDATE on the table or view.\\n\\nBy default, updated rows are not returned. To return it, chain the call\\nwith \`.select()\` after filters.",
+          "text": "- \`update()\` should always be combined with [Filters](/docs/reference/javascript/using-filters) to target the item(s) you wish to update.",
+          "examples": [
+            {
+              "id": "updating-your-data",
+              "name": "Updating your data",
+              "code": "\`\`\`ts\\nconst { error } = await supabase\\n  .from('instruments')\\n  .update({ name: 'piano' })\\n  .eq('id', 1)\\n\`\`\`",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  instruments (id int8 primary key, name text);\\n\\ninsert into\\n  instruments (id, name)\\nvalues\\n  (1, 'harpsichord');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"status\\": 204,\\n  \\"statusText\\": \\"No Content\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "update-a-record-and-return-it",
+              "name": "Update a record and return it",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('instruments')\\n  .update({ name: 'piano' })\\n  .eq('id', 1)\\n  .select()\\n\`\`\`",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  instruments (id int8 primary key, name text);\\n\\ninsert into\\n  instruments (id, name)\\nvalues\\n  (1, 'harpsichord');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"id\\": 1,\\n      \\"name\\": \\"piano\\"\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "updating-json-data",
+              "name": "Updating JSON data",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('users')\\n  .update({\\n    address: {\\n      street: 'Melrose Place',\\n      postcode: 90210\\n    }\\n  })\\n  .eq('address->postcode', 90210)\\n  .select()\\n\`\`\`",
+              "description": "Postgres offers some\\n[operators](/docs/guides/database/json#query-the-jsonb-data) for\\nworking with JSON data. Currently, it is only possible to update the entire JSON document.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  users (\\n    id int8 primary key,\\n    name text,\\n    address jsonb\\n  );\\n\\ninsert into\\n  users (id, name, address)\\nvalues\\n  (1, 'Michael', '{ \\"postcode\\": 90210 }');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"id\\": 1,\\n      \\"name\\": \\"Michael\\",\\n      \\"address\\": {\\n        \\"street\\": \\"Melrose Place\\",\\n        \\"postcode\\": 90210\\n      }\\n    }\\n  ],\\n  \\"status\\": 200,\\n  \\"statusText\\": \\"OK\\"\\n}\\n\`\`\`"
+            }
+          ]
         }
       },
       "@supabase/postgrest-js.PostgrestQueryBuilder.upsert": {
@@ -83511,6 +83836,7 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         },
         "comment": {
           "shortText": "Perform an UPSERT on the table or view. Depending on the column(s) passed\\nto \`onConflict\`, \`.upsert()\` allows you to perform the equivalent of\\n\`.insert()\` if a row with the corresponding \`onConflict\` columns doesn't\\nexist, or if it does exist, perform an alternative action depending on\\n\`ignoreDuplicates\`.\\n\\nBy default, upserted rows are not returned. To return it, chain the call\\nwith \`.select()\`.",
+          "text": "- Primary keys must be included in \`values\` to use upsert.",
           "examples": [
             {
               "id": "upsert-a-single-row-using-a-unique-key",
@@ -83521,6 +83847,34 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
               "id": "upsert-with-conflict-resolution-and-exact-row-counting",
               "name": "Upsert with conflict resolution and exact row counting",
               "code": "\`\`\`ts\\n// Upserting and returning exact count\\nconst { data, error, count } = await supabase\\n  .from('users')\\n  .upsert(\\n    {\\n      id: 3,\\n      message: 'foo',\\n      username: 'supabot'\\n    },\\n    {\\n      onConflict: 'username',\\n      count: 'exact'\\n    }\\n  )\\n\\n// Example response:\\n// {\\n//   data: [\\n//     {\\n//       id: 42,\\n//       handle: \\"saoirse\\",\\n//       display_name: \\"Saoirse\\"\\n//     }\\n//   ],\\n//   count: 1,\\n//   error: null\\n// }\\n\`\`\`"
+            },
+            {
+              "id": "upsert-your-data",
+              "name": "Upsert your data",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('instruments')\\n  .upsert({ id: 1, name: 'piano' })\\n  .select()\\n\`\`\`",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  instruments (id int8 primary key, name text);\\n\\ninsert into\\n  instruments (id, name)\\nvalues\\n  (1, 'harpsichord');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"id\\": 1,\\n      \\"name\\": \\"piano\\"\\n    }\\n  ],\\n  \\"status\\": 201,\\n  \\"statusText\\": \\"Created\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "bulk-upsert-your-data",
+              "name": "Bulk Upsert your data",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('instruments')\\n  .upsert([\\n    { id: 1, name: 'piano' },\\n    { id: 2, name: 'harp' },\\n  ])\\n  .select()\\n\`\`\`",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  instruments (id int8 primary key, name text);\\n\\ninsert into\\n  instruments (id, name)\\nvalues\\n  (1, 'harpsichord');\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"data\\": [\\n    {\\n      \\"id\\": 1,\\n      \\"name\\": \\"piano\\"\\n    },\\n    {\\n      \\"id\\": 2,\\n      \\"name\\": \\"harp\\"\\n    }\\n  ],\\n  \\"status\\": 201,\\n  \\"statusText\\": \\"Created\\"\\n}\\n\`\`\`"
+            },
+            {
+              "id": "upserting-into-tables-with-constraints",
+              "name": "Upserting into tables with constraints",
+              "code": "\`\`\`ts\\nconst { data, error } = await supabase\\n  .from('users')\\n  .upsert({ id: 42, handle: 'saoirse', display_name: 'Saoirse' })\\n  .select()\\n\`\`\`",
+              "description": "In the following query, \`upsert()\` implicitly uses the \`id\`\\n(primary key) column to determine conflicts. If there is no existing\\nrow with the same \`id\`, \`upsert()\` inserts a new row, which\\nwill fail in this case as there is already a row with \`handle\` \`\\"saoirse\\"\`.\\nUsing the \`onConflict\` option, you can instruct \`upsert()\` to use\\nanother column with a unique constraint to determine conflicts.",
+              "data": {
+                "sql": "\`\`\`sql\\ncreate table\\n  users (\\n    id int8 generated by default as identity primary key,\\n    handle text not null unique,\\n    display_name text\\n  );\\n\\ninsert into\\n  users (id, handle, display_name)\\nvalues\\n  (1, 'saoirse', null);\\n\`\`\`"
+              },
+              "response": "\`\`\`json\\n{\\n  \\"error\\": {\\n    \\"code\\": \\"23505\\",\\n    \\"details\\": \\"Key (handle)=(saoirse) already exists.\\",\\n    \\"hint\\": null,\\n    \\"message\\": \\"duplicate key value violates unique constraint \\\\\\"users_handle_key\\\\\\"\\"\\n  },\\n  \\"status\\": 409,\\n  \\"statusText\\": \\"Conflict\\"\\n}\\n\`\`\`"
             }
           ]
         },
@@ -84736,6 +85090,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
               "id": "example-1",
               "name": "Example 1",
               "code": "\`\`\`ts\\nimport RealtimeClient from '@supabase/realtime-js'\\n\\nconst client = new RealtimeClient('https://xyzcompany.supabase.co/realtime/v1', {\\n  params: { apikey: 'public-anon-key' },\\n})\\nconst channel = new RealtimeChannel('realtime:public:messages', { config: {} }, client)\\n\`\`\`"
+            },
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nimport RealtimeClient from '@supabase/realtime-js'\\n\\nconst client = new RealtimeClient('https://xyzcompany.supabase.co/realtime/v1', {\\n  params: { apikey: 'public-anon-key' },\\n})\\nconst channel = new RealtimeChannel('realtime:public:messages', { config: {} }, client)\\n\`\`\`"
             }
           ]
         }
@@ -84774,6 +85133,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         "comment": {
           "shortText": "Creates a Presence helper that keeps the local presence state in sync with the server.",
           "examples": [
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nconst presence = new RealtimePresence(channel)\\n\\nchannel.on('presence', ({ event, key }) => {\\n  console.log(\`Presence \${event} on \${key}\`)\\n})\\n\`\`\`"
+            },
             {
               "id": "example-1",
               "name": "Example 1",
@@ -85007,6 +85371,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         "comment": {
           "shortText": "Initializes the Socket.",
           "examples": [
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nimport RealtimeClient from '@supabase/realtime-js'\\n\\nconst client = new RealtimeClient('https://xyzcompany.supabase.co/realtime/v1', {\\n  params: { apikey: 'public-anon-key' },\\n})\\nclient.connect()\\n\`\`\`"
+            },
             {
               "id": "example-1",
               "name": "Example 1",
@@ -87069,7 +87438,21 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           }
         },
         "comment": {
-          "shortText": "Sends a message into the channel."
+          "shortText": "Sends a message into the channel.",
+          "text": "- When using REST you don't need to subscribe to the channel\\n- REST calls are only available from 2.37.0 onwards",
+          "examples": [
+            {
+              "id": "send-a-message-via-websocket",
+              "name": "Send a message via websocket",
+              "code": "\`\`\`js\\nsupabase\\n  .channel('room1')\\n  .subscribe((status) => {\\n    if (status === 'SUBSCRIBED') {\\n      channel.send({\\n        type: 'broadcast',\\n        event: 'cursor-pos',\\n        payload: { x: Math.random(), y: Math.random() },\\n      })\\n    }\\n  })\\n\`\`\`",
+              "response": "\`\`\`js\\nok | timed out | error\\n\`\`\`"
+            },
+            {
+              "id": "send-a-message-via-rest",
+              "name": "Send a message via REST",
+              "code": "\`\`\`js\\nsupabase\\n  .channel('room1')\\n  .httpSend('cursor-pos', { x: Math.random(), y: Math.random() })\\n\`\`\`"
+            }
+          ]
         }
       },
       "@supabase/realtime-js.RealtimeChannel.subscribe": {
@@ -87120,7 +87503,7 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
           }
         },
         "comment": {
-          "shortText": "Subscribe registers your client with the server"
+          "shortText": "Subscribe registers your client with the server  *"
         }
       },
       "@supabase/realtime-js.RealtimeChannel.teardown": {
@@ -87606,6 +87989,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
               "id": "example-1",
               "name": "Example 1",
               "code": "\`\`\`ts\\nconst socket = WebSocketFactory.createWebSocket('wss://realtime.supabase.co/socket')\\n\`\`\`"
+            },
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nconst socket = WebSocketFactory.createWebSocket('wss://realtime.supabase.co/socket')\\n\`\`\`"
             }
           ]
         }
@@ -87669,6 +88057,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
               "id": "example-1",
               "name": "Example 1",
               "code": "\`\`\`ts\\nconst WS = WebSocketFactory.getWebSocketConstructor()\\nconst socket = new WS('wss://realtime.supabase.co/socket')\\n\`\`\`"
+            },
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nconst WS = WebSocketFactory.getWebSocketConstructor()\\nconst socket = new WS('wss://realtime.supabase.co/socket')\\n\`\`\`"
             }
           ]
         }
@@ -87685,6 +88078,11 @@ exports[`TS type spec parsing > matches snapshot 1`] = `
         "comment": {
           "shortText": "Detects whether the runtime can establish WebSocket connections.",
           "examples": [
+            {
+              "id": "example-1",
+              "name": "Example 1",
+              "code": "\`\`\`ts\\nif (!WebSocketFactory.isWebSocketSupported()) {\\n  console.warn('Falling back to long polling')\\n}\\n\`\`\`"
+            },
             {
               "id": "example-1",
               "name": "Example 1",

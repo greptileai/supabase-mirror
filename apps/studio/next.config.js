@@ -613,7 +613,9 @@ const nextConfig = {
 module.exports =
   process.env.NEXT_PUBLIC_IS_PLATFORM === 'true'
     ? withSentryConfig(withBundleAnalyzer(nextConfig), {
-        silent: true,
+        // Surface upload errors/warnings in build logs instead of swallowing them.
+        // With silent:true, missing SENTRY_AUTH_TOKEN or upload failures go unnoticed.
+        silent: false,
 
         // For all available options, see:
         // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
@@ -626,8 +628,12 @@ module.exports =
           enabled: true,
         },
 
-        // Hides source maps from generated client bundles
-        hideSourceMaps: true,
+        sourcemaps: {
+          // Delete .map files from build output after uploading to Sentry.
+          // Prevents source maps from being shipped to the CDN via upload-static-assets.sh.
+          // This is the v10 replacement for the removed `hideSourceMaps` option.
+          deleteSourcemapsAfterUpload: true,
+        },
 
         // Automatically tree-shake Sentry logger statements to reduce bundle size
         disableLogger: true,
@@ -638,10 +644,5 @@ module.exports =
         // https://vercel.com/docs/cron-jobs
         automaticVercelMonitors: true,
 
-        // Annotate bundles at build time so thirdPartyErrorFilterIntegration can
-        // distinguish our code from browser extensions / injected scripts at runtime.
-        unstable_sentryWebpackPluginOptions: {
-          applicationKey: 'supabase-studio',
-        },
       })
     : nextConfig

@@ -93,25 +93,11 @@ Sentry.init({
     environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
   }),
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
+  debug: process.env.NEXT_PUBLIC_VERCEL_ENV !== 'production',
 
   // Enable performance monitoring
   tracesSampleRate: 1.0, // Capture 100% of transactions for performance monitoring
 
-  integrations: (() => {
-    const thirdPartyErrorFilterIntegration = (Sentry as any).thirdPartyErrorFilterIntegration
-    if (!thirdPartyErrorFilterIntegration) return []
-
-    // Drop errors whose stack trace only contains third-party frames (browser extensions,
-    // injected scripts, etc.). This uses build-time code annotation via the applicationKey
-    // in next.config.js to reliably distinguish our code from third-party code.
-    return [
-      thirdPartyErrorFilterIntegration({
-        filterKeys: ['supabase-studio'],
-        behaviour: 'drop-error-if-exclusively-contains-third-party-frames',
-      }),
-    ]
-  })(),
 
   // Only capture errors originating from our own code.
   // This is a whitelist on the source URL in stack frames — it drops errors from
@@ -119,6 +105,11 @@ Sentry.init({
   allowUrls: [
     /https?:\/\/(.*\.)?supabase\.(com|co|green|io)/,
     /app:\/\//, // Next.js rewrites source URLs to app:// with source maps
+    // On Vercel preview deployments, assets are served from *.vercel.app (no CDN).
+    // Allow those so errors from preview branches reach Sentry.
+    ...(process.env.NEXT_PUBLIC_VERCEL_ENV !== 'production'
+      ? [/https?:\/\/.*\.vercel\.app/]
+      : []),
   ],
   beforeBreadcrumb(breadcrumb, _hint) {
     const cleanedBreadcrumb = { ...breadcrumb }

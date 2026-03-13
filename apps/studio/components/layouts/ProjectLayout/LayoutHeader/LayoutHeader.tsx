@@ -21,7 +21,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ReactNode, useMemo } from 'react'
 import { useAppStateSnapshot } from 'state/app-state'
-import { Badge, cn } from 'ui'
+import * as Sentry from '@sentry/nextjs'
+import { Badge, Button, cn } from 'ui'
 import { CommandMenuTriggerInput } from 'ui-patterns'
 
 import { BreadcrumbsView } from './BreadcrumbsView'
@@ -221,6 +222,18 @@ export const LayoutHeader = ({
             {IS_PLATFORM ? (
               <>
                 <DevToolbarTrigger />
+                {process.env.NEXT_PUBLIC_VERCEL_ENV !== 'production' && (
+                  <Button
+                    type="outline"
+                    size="tiny"
+                    onClick={() => {
+                      Sentry.captureException(new Error('Sentry source map test error'))
+                      alert('Sentry test error sent! Check Sentry for source map resolution.')
+                    }}
+                  >
+                    Test Sentry
+                  </Button>
+                )}
                 <FeedbackDropdown />
 
                 <div className="flex items-center gap-1 md:gap-2">

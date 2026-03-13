@@ -1,4 +1,5 @@
 import useDbQuery from 'hooks/analytics/useDbQuery'
+
 import { PRESET_CONFIG } from './Reports.constants'
 import { Presets } from './Reports.types'
 
@@ -32,6 +33,8 @@ export type QueryPerformanceQueryOpts = {
   minCalls?: number
   minTotalTime?: number
   filterIndexAdvisor?: boolean
+  page?: number
+  pageSize?: number
 }
 
 export const useQueryPerformanceQuery = ({
@@ -43,6 +46,8 @@ export const useQueryPerformanceQuery = ({
   minCalls,
   minTotalTime,
   filterIndexAdvisor = false,
+  page = 1,
+  pageSize = 20,
 }: QueryPerformanceQueryOpts) => {
   const queryPerfQueries = PRESET_CONFIG[Presets.QUERY_PERFORMANCE]
   const baseSQL = queryPerfQueries.queries[preset]
@@ -66,7 +71,9 @@ export const useQueryPerformanceQuery = ({
     whereSql.length > 0 ? `WHERE ${whereSql}` : undefined,
     orderBySql,
     runIndexAdvisor,
-    filterIndexAdvisor
+    filterIndexAdvisor,
+    page,
+    pageSize
   )
   return useDbQuery({
     sql,

@@ -1,31 +1,40 @@
-import { LoadingLine, cn } from 'ui'
-import { useState, useEffect, useMemo } from 'react'
-
-import { Button } from 'ui'
-import { X, RefreshCw, RotateCcw } from 'lucide-react'
-import { Markdown } from '../../Markdown'
-import ConfirmationModal from 'ui-patterns/Dialogs/ConfirmationModal'
-import { Admonition } from 'ui-patterns'
-import { useLocalStorageQuery } from 'hooks/misc/useLocalStorage'
 import { LOCAL_STORAGE_KEYS, useParams } from 'common'
-import { useDatabaseSelectorStateSnapshot } from 'state/database-selector'
-import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
-import { DOCS_URL, IS_PLATFORM } from 'lib/constants'
-import { executeSql } from 'data/sql/execute-sql-query'
-import { toast } from 'sonner'
+import { PresetHookResult } from 'components/interfaces/Reports/Reports.utils'
+import Pagination from 'components/interfaces/TableGridEditor/SidePanelEditor/RowEditor/ForeignRowSelector/Pagination'
+import { ButtonTooltip } from 'components/ui/ButtonTooltip'
+import { DownloadResultsButton } from 'components/ui/DownloadResultsButton'
 import { useReadReplicasQuery } from 'data/read-replicas/replicas-query'
 import { formatDatabaseID } from 'data/read-replicas/replicas.utils'
-import { PresetHookResult } from 'components/interfaces/Reports/Reports.utils'
+import { executeSql } from 'data/sql/execute-sql-query'
 import { DbQueryHook } from 'hooks/analytics/useDbQuery'
-import { QueryPerformanceMetrics } from '../QueryPerformanceMetrics'
+import { useLocalStorageQuery } from 'hooks/misc/useLocalStorage'
+import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
+import { DOCS_URL, IS_PLATFORM } from 'lib/constants'
+import { getErrorMessage } from 'lib/get-error-message'
+import { RefreshCw, RotateCcw, X } from 'lucide-react'
+import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs'
+import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
+import { useDatabaseSelectorStateSnapshot } from 'state/database-selector'
+import {
+  Button,
+  cn,
+  LoadingLine,
+  Select_Shadcn_,
+  SelectContent_Shadcn_,
+  SelectItem_Shadcn_,
+  SelectTrigger_Shadcn_,
+  SelectValue_Shadcn_,
+} from 'ui'
+import { Admonition } from 'ui-patterns'
+import ConfirmationModal from 'ui-patterns/Dialogs/ConfirmationModal'
+
+import { Markdown } from '../../Markdown'
+import { captureQueryPerformanceError } from '../QueryPerformance.utils'
 import { QueryPerformanceFilterBar } from '../QueryPerformanceFilterBar'
 import { QueryPerformanceGrid } from '../QueryPerformanceGrid'
+import { QueryPerformanceMetrics } from '../QueryPerformanceMetrics'
 import { transformStatementDataToRows } from './WithStatements.utils'
-import { DownloadResultsButton } from 'components/ui/DownloadResultsButton'
-import { ButtonTooltip } from 'components/ui/ButtonTooltip'
-import { captureQueryPerformanceError } from '../QueryPerformance.utils'
-import { getErrorMessage } from 'lib/get-error-message'
-import { parseAsString, useQueryStates } from 'nuqs'
 
 interface WithStatementsProps {
   queryHitRate: PresetHookResult
@@ -59,6 +68,14 @@ export const WithStatements = ({
   const [{ indexAdvisor }] = useQueryStates({
     indexAdvisor: parseAsString.withDefault('false'),
   })
+
+  const PAGE_SIZE_OPTIONS = [20, 50, 100]
+  const [{ page, pageSize }, setPaginationState] = useQueryStates({
+    page: parseAsInteger.withDefault(1),
+    pageSize: parseAsInteger.withDefault(20),
+  })
+  const resolvedPage = page ?? 1
+  const resolvedPageSize = PAGE_SIZE_OPTIONS.includes(pageSize ?? 20) ? pageSize ?? 20 : 20
 
   const handleRefresh = () => {
     queryPerformanceQuery.runQuery()
@@ -194,6 +211,36 @@ export const WithStatements = ({
         }
         onRetry={handleRefresh}
       />
+      <div className="flex items-center justify-between px-6 py-2 border-t">
+        <div className="flex items-center gap-x-2">
+          <span className="text-xs text-foreground-light">Rows per page</span>
+          <Select_Shadcn_
+            value={String(resolvedPageSize)}
+            onValueChange={(val) => setPaginationState({ page: 1, pageSize: Number(val) })}
+          >
+            <SelectTrigger_Shadcn_ className="h-7 w-[70px] text-xs">
+              <SelectValue_Shadcn_ />
+            </SelectTrigger_Shadcn_>
+            <SelectContent_Shadcn_>
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <SelectItem_Shadcn_ key={size} value={String(size)} className="text-xs">
+                  {size}
+                </SelectItem_Shadcn_>
+              ))}
+            </SelectContent_Shadcn_>
+          </Select_Shadcn_>
+        </div>
+        <div className="flex items-center gap-x-3">
+          <span className="text-xs text-foreground-light">Page {resolvedPage}</span>
+          <Pagination
+            page={resolvedPage}
+            setPage={(setter) => setPaginationState({ page: setter(resolvedPage) })}
+            rowsPerPage={resolvedPageSize}
+            currentPageRowsCount={processedData.length}
+            isLoading={isLoading || isRefetching}
+          />
+        </div>
+      </div>
       <div
         className={cn('px-6 py-6 flex gap-x-4 border-t relative', {
           hidden: showBottomSection === false,

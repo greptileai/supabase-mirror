@@ -11,7 +11,7 @@ import {
   generateProductRoutes,
   generateSettingsRoutes,
   generateToolRoutes,
-} from 'components/layouts/ProjectLayout/NavigationBar/NavigationBar.utils'
+} from 'components/layouts/Navigation/NavigationBar/NavigationBar.utils'
 import type { Route } from 'components/ui/ui.types'
 import { useIsFeatureEnabled } from 'hooks/misc/useIsFeatureEnabled'
 import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
@@ -99,7 +99,7 @@ export function MobileMenuContent({
       }),
     [ref, project, isUnifiedLogsEnabled, showReports, isNewAPIDocsEnabled]
   )
-  const settingsRoutes = useMemo(() => generateSettingsRoutes(ref, project), [ref, project])
+  const settingsRoutes = useMemo(() => generateSettingsRoutes(ref), [ref])
 
   const homeRoute: Route = useMemo(
     () => ({

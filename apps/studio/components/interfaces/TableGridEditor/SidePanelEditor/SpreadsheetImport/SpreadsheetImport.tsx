@@ -1,6 +1,6 @@
 import type { PostgresTable } from '@supabase/postgres-meta'
 import { debounce, noop } from 'lodash'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { useParams } from 'common'
@@ -67,6 +67,8 @@ export const SpreadsheetImport = ({
   })
   const [errors, setErrors] = useState<any>([])
   const [selectedHeaders, setSelectedHeaders] = useState<string[]>([])
+  const [treatEmptyAsNull, setTreatEmptyAsNull] = useState(false)
+  const treatEmptyAsNullRef = useRef(treatEmptyAsNull)
 
   const { mutate: sendEvent } = useSendEventMutation()
 
@@ -89,7 +91,8 @@ export const SpreadsheetImport = ({
 
       const { headers, rowCount, columnTypeMap, errors, previewRows } = await parseSpreadsheet(
         file,
-        onProgressUpdate
+        onProgressUpdate,
+        treatEmptyAsNull
       )
 
       if (errors.length > 0) {
@@ -100,7 +103,7 @@ export const SpreadsheetImport = ({
       setSelectedHeaders(headers)
       setSpreadsheetData({ headers, rows: previewRows, rowCount, columnTypeMap })
     },
-    [updateEditorDirty]
+    [updateEditorDirty, treatEmptyAsNull]
   )
 
   // Handle file upload events from file input
@@ -124,9 +127,12 @@ export const SpreadsheetImport = ({
     updateEditorDirty(false)
   }, [updateEditorDirty])
 
-  const readSpreadsheetText = async (text: string) => {
+  const readSpreadsheetText = useCallback(async (text: string) => {
     if (text.length > 0) {
-      const { headers, rows, columnTypeMap, errors } = await parseSpreadsheetText(text)
+      const { headers, rows, columnTypeMap, errors } = await parseSpreadsheetText(
+        text,
+        treatEmptyAsNullRef.current
+      )
       if (errors.length > 0) {
         toast.error(csvParseErrorMessage)
       }
@@ -136,10 +142,9 @@ export const SpreadsheetImport = ({
     } else {
       setSpreadsheetData(EMPTY_SPREADSHEET_DATA)
     }
-  }
+  }, [])
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handler = useCallback(debounce(readSpreadsheetText, debounceDuration), [])
+  const handler = useCallback(debounce(readSpreadsheetText, debounceDuration), [readSpreadsheetText])
   const onInputChange = (event: any) => {
     setInput(event.target.value)
     handler(event.target.value)
@@ -165,13 +170,22 @@ export const SpreadsheetImport = ({
       )
       resolve()
     } else {
-      saveContent({ file: uploadedFile, ...spreadsheetData, selectedHeaders, resolve })
+      saveContent({ file: uploadedFile, ...spreadsheetData, selectedHeaders, treatEmptyAsNull, resolve })
       sendEvent({
         action: 'import_data_added',
         groups: { project: projectRef ?? 'Unknown', organization: org?.slug ?? 'Unknown' },
       })
     }
   }
+
+  useEffect(() => {
+    treatEmptyAsNullRef.current = treatEmptyAsNull
+    if (uploadedFile !== undefined) processFile(uploadedFile)
+    else if (input.length > 0) readSpreadsheetText(input)
+    // intentionally omitting uploadedFile, input, processFile, readSpreadsheetText —
+    // this effect should only re-parse when the toggle changes, not on every input change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [treatEmptyAsNull])
 
   useEffect(() => {
     if (visiblityChanged && visible) {
@@ -237,6 +251,8 @@ export const SpreadsheetImport = ({
             spreadsheetData={spreadsheetData}
             selectedHeaders={selectedHeaders}
             onToggleHeader={onToggleHeader}
+            treatEmptyAsNull={treatEmptyAsNull}
+            onToggleTreatEmptyAsNull={() => setTreatEmptyAsNull((prev) => !prev)}
           />
           <SidePanel.Separator />
           <SpreadsheetImportPreview

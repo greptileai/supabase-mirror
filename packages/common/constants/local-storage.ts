@@ -100,6 +100,9 @@ export const LOCAL_STORAGE_KEYS = {
   // Index Advisor notice dismissed
   INDEX_ADVISOR_NOTICE_DISMISSED: (ref: string) => `index-advisor-notice-dismissed-${ref}`,
 
+  // Micro upgrade banner dismissed
+  MICRO_UPGRADE_BANNER_DISMISSED: (ref: string) => `micro-upgrade-banner-dismissed-${ref}`,
+
   // RLS event trigger banner dismissed
   RLS_EVENT_TRIGGER_BANNER_DISMISSED: (ref: string) => `rls-event-trigger-banner-dismissed-${ref}`,
 

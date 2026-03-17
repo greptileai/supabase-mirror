@@ -1,20 +1,97 @@
 'use client'
 
-import { CheckIcon } from '@heroicons/react/outline'
 import { REALTIME_CHANNEL_STATES } from '@supabase/supabase-js'
+import supabase from '~/lib/supabase'
+import supabaseLogoWordmarkDark from 'common/assets/images/supabase-logo-wordmark--dark.svg'
+import supabaseLogoWordmarkLight from 'common/assets/images/supabase-logo-wordmark--light.svg'
+import footerData from 'data/Footer'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect } from 'react'
-
-import * as supabaseLogoWordmarkDark from 'common/assets/images/supabase-logo-wordmark--dark.png'
-import * as supabaseLogoWordmarkLight from 'common/assets/images/supabase-logo-wordmark--light.png'
-import footerData from 'data/Footer'
 import { usePathname } from 'next/navigation'
-import { Badge, IconDiscord, IconGitHubSolid, IconTwitterX, IconYoutubeSolid, cn } from 'ui'
+import { useEffect } from 'react'
+import { Badge, cn, IconDiscord, IconGitHubSolid, IconTwitterX, IconYoutubeSolid } from 'ui'
 import { ThemeToggle } from 'ui-patterns/ThemeToggle'
-import supabase from '~/lib/supabase'
+
 import useDarkLaunchWeeks from '../../hooks/useDarkLaunchWeeks'
 import SectionContainer from '../Layouts/SectionContainer'
+
+function Soc2Seal({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <circle cx="50" cy="50" r="48" stroke="currentColor" strokeWidth="2" />
+      <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="1" />
+      <text
+        x="50"
+        y="34"
+        textAnchor="middle"
+        fill="currentColor"
+        fontSize="10"
+        fontWeight="500"
+        fontFamily="system-ui, sans-serif"
+        letterSpacing="3"
+      >
+        AICPA
+      </text>
+      <text
+        x="50"
+        y="58"
+        textAnchor="middle"
+        fill="currentColor"
+        fontSize="24"
+        fontWeight="800"
+        fontFamily="system-ui, sans-serif"
+      >
+        SOC2
+      </text>
+      <text
+        x="50"
+        y="72"
+        textAnchor="middle"
+        fill="currentColor"
+        fontSize="10"
+        fontWeight="500"
+        fontFamily="system-ui, sans-serif"
+        letterSpacing="3"
+      >
+        TYPE 2
+      </text>
+    </svg>
+  )
+}
+
+function HipaaSeal({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <circle cx="50" cy="50" r="48" stroke="currentColor" strokeWidth="2" />
+      <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="1" />
+
+      <text
+        x="50"
+        y="50"
+        textAnchor="middle"
+        fill="currentColor"
+        fontSize="16"
+        fontWeight="700"
+        fontFamily="system-ui, sans-serif"
+        letterSpacing="1"
+      >
+        HIPAA
+      </text>
+      <text
+        x="50"
+        y="64"
+        textAnchor="middle"
+        fill="currentColor"
+        fontSize="7.5"
+        fontWeight="500"
+        fontFamily="system-ui, sans-serif"
+        letterSpacing="1"
+      >
+        COMPLIANT
+      </text>
+    </svg>
+  )
+}
 
 interface Props {
   className?: string
@@ -64,12 +141,13 @@ const Footer = (props: Props) => {
           </div>
           <ul className="flex flex-col md:flex-row gap-2 md:gap-8 justify-center md:items-center">
             <li className="flex items-center gap-2 whitespace-nowrap flex-nowrap">
-              <CheckIcon className="w-4 h-4" /> SOC2 Type 2{' '}
+              <Soc2Seal className="shrink-0 w-12 h-12 md:w-20 md:h-20 text-foreground-muted" />
+              SOC2 Type 2{' '}
               <span className="text-foreground-lighter hidden sm:inline">Certified</span>
             </li>
             <li className="flex items-center gap-2 whitespace-nowrap flex-nowrap">
-              <CheckIcon className="w-4 h-4" /> HIPAA{' '}
-              <span className="text-foreground-lighter hidden sm:inline">Compliant</span>
+              <HipaaSeal className="shrink-0 w-12 h-12 md:w-20 md:h-20 text-foreground-muted" />
+              HIPAA <span className="text-foreground-lighter hidden sm:inline">Compliant</span>
             </li>
           </ul>
         </SectionContainer>

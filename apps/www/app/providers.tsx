@@ -11,8 +11,9 @@ import {
   useThemeSandbox,
 } from 'common'
 import { WwwCommandMenu } from 'components/CommandMenu'
+import { FontDevtools } from 'components/FontDevtools'
 import { DevToolbar, DevToolbarProvider } from 'dev-tools'
-import { API_URL } from 'lib/constants'
+import { API_URL, IS_PROD } from 'lib/constants'
 import { themes, TooltipProvider, SonnerToaster } from 'ui'
 import { CommandProvider } from 'ui-patterns/CommandMenu'
 import { useConsentToast } from 'ui-patterns/consent'
@@ -44,6 +45,7 @@ function Providers({ children }: { children: React.ReactNode }) {
                     enabled={IS_PLATFORM}
                   />
                   <DevToolbar />
+                  {!IS_PROD && <FontDevtools />}
                 </CommandProvider>
               </TooltipProvider>
             </ThemeProvider>

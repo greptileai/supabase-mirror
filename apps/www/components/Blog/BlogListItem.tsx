@@ -35,7 +35,7 @@ const BlogListItem = ({ post }: Props) => {
     <Link
       href={post.path}
       prefetch={false}
-      className="group flex flex-col lg:grid lg:grid-cols-10 xl:grid-cols-12 w-full py-2 sm:py-4 h-full border-b"
+      className="group flex flex-col lg:grid lg:grid-cols-10 xl:grid-cols-12 w-full px-6 py-2 sm:py-4 h-full border-b border-border last:border-b-0 hover:bg-surface-75/50 transition-colors"
     >
       <div className="flex w-full lg:col-span-8 xl:col-span-8">
         <h3 className="text-foreground text-lg group-hover:underline">{post.title}</h3>

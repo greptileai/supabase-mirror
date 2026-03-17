@@ -38,35 +38,32 @@ const BlogGridItem = ({ post }: Props) => {
     <Link
       href={post.path}
       prefetch={false}
-      className="group inline-block min-w-full p-2 sm:p-4 h-full border border-transparent transition-all hover:bg-surface-200 dark:hover:bg-surface-75 rounded-xl"
+      className="group flex flex-col h-full hover:bg-surface-75/50 transition-colors p-6"
     >
-      <div className="flex flex-col space-y-2">
-        <div className="flex flex-col space-y-1">
-          <div className="border-default relative mb-3 w-full aspect-[1.91/1] overflow-hidden rounded-lg border shadow-sm">
-            <Image
-              fill
-              sizes="100%"
-              quality={100}
-              src={imageUrl}
-              className="scale-100 object-cover overflow-hidden"
-              alt={`${post.title} thumbnail`}
-            />
+      <div className="relative w-full aspect-[1.91/1] overflow-hidden">
+        <Image
+          fill
+          sizes="100%"
+          quality={100}
+          src={imageUrl}
+          className="object-cover overflow-hidden rounded-md"
+          alt={`${post.title} thumbnail`}
+        />
+      </div>
+      <div className="flex flex-col gap-1 pt-4">
+        {post.date && (
+          <div className="text-foreground-lighter flex items-center space-x-1.5 text-sm">
+            <p>{dayjs(post.date).format('D MMM YYYY')}</p>
+            {post.readingTime && (
+              <>
+                <p>•</p>
+                <p>{post.readingTime}</p>
+              </>
+            )}
           </div>
-
-          {post.date && (
-            <div className="text-foreground-lighter flex items-center space-x-1.5 text-sm">
-              <p>{dayjs(post.date).format('D MMM YYYY')}</p>
-              {post.readingTime && (
-                <>
-                  <p>•</p>
-                  <p>{post.readingTime}</p>
-                </>
-              )}
-            </div>
-          )}
-          <h3 className="text-foreground max-w-sm text-xl">{post.title}</h3>
-          <p className="text-foreground-light max-w-sm text-base !mb-0">{post.description}</p>
-        </div>
+        )}
+        <h3 className="text-foreground text-lg group-hover:underline">{post.title}</h3>
+        <p className="text-foreground-lighter text-sm mt-1 line-clamp-2">{post.description}</p>
       </div>
     </Link>
   )

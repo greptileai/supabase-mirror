@@ -1,12 +1,10 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import DefaultLayout from 'components/Layouts/Default'
 import BlogGridItem from 'components/Blog/BlogGridItem'
 import BlogListItem from 'components/Blog/BlogListItem'
 import BlogFilters from 'components/Blog/BlogFilters'
 import FeaturedThumb from 'components/Blog/FeaturedThumb'
-import { cn } from 'ui'
 import { LOCAL_STORAGE_KEYS, isBrowser } from 'common'
 import { useInfiniteScrollWithFetch } from 'hooks/useInfiniteScroll'
 
@@ -19,7 +17,7 @@ const SKELETON_COUNT = 6
 
 function BlogListItemSkeleton() {
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-10 xl:grid-cols-12 w-full py-2 sm:py-4 h-full border-b">
+    <div className="flex flex-col lg:grid lg:grid-cols-10 xl:grid-cols-12 w-full px-6 py-2 sm:py-4 h-full border-b border-border last:border-b-0">
       <div className="flex w-full lg:col-span-8 xl:col-span-8">
         <div className="h-6 bg-foreground-muted/20 rounded animate-pulse w-3/4" />
       </div>
@@ -41,20 +39,16 @@ function BlogListItemSkeleton() {
 
 function BlogGridItemSkeleton() {
   return (
-    <div className="inline-block min-w-full p-2 sm:p-4 h-full">
-      <div className="flex flex-col space-y-2">
-        <div className="flex flex-col space-y-1">
-          <div className="relative mb-3 w-full aspect-[2/1] lg:aspect-[5/3] overflow-hidden rounded-lg border border-default bg-foreground-muted/20 animate-pulse" />
-          <div className="flex items-center space-x-1.5">
-            <div className="h-4 w-24 bg-foreground-muted/20 rounded animate-pulse" />
-            <div className="h-4 w-4 bg-foreground-muted/20 rounded animate-pulse" />
-            <div className="h-4 w-16 bg-foreground-muted/20 rounded animate-pulse" />
-          </div>
-          <div className="h-6 w-3/4 bg-foreground-muted/20 rounded animate-pulse mt-1" />
-          <div className="h-4 w-full bg-foreground-muted/20 rounded animate-pulse mt-1" />
-          <div className="h-4 w-2/3 bg-foreground-muted/20 rounded animate-pulse" />
-        </div>
+    <div className="flex flex-col gap-2 p-6">
+      <div className="relative w-full aspect-[1.91/1] overflow-hidden bg-foreground-muted/20 animate-pulse" />
+      <div className="flex items-center space-x-1.5 mt-2">
+        <div className="h-4 w-24 bg-foreground-muted/20 rounded animate-pulse" />
+        <div className="h-4 w-4 bg-foreground-muted/20 rounded animate-pulse" />
+        <div className="h-4 w-16 bg-foreground-muted/20 rounded animate-pulse" />
       </div>
+      <div className="h-6 w-3/4 bg-foreground-muted/20 rounded animate-pulse mt-1" />
+      <div className="h-4 w-full bg-foreground-muted/20 rounded animate-pulse mt-1" />
+      <div className="h-4 w-2/3 bg-foreground-muted/20 rounded animate-pulse" />
     </div>
   )
 }
@@ -162,75 +156,75 @@ export default function BlogClient({ initialBlogs, totalPosts }: BlogClientProps
   const featuredPost = initialBlogs[0]
 
   return (
-    <>
-      <DefaultLayout>
-        <h1 className="sr-only">Supabase blog</h1>
-        <div className="container relative mx-auto px-4 py-4 md:py-8 xl:py-10 sm:px-16 xl:px-20">
-          {featuredPost && <FeaturedThumb key={featuredPost.slug} {...featuredPost} />}
-        </div>
+    <div>
+      <h1 className="sr-only">Supabase blog</h1>
 
-        <div className="border-default border-t">
-          <div className="container mx-auto px-4 py-4 md:py-8 xl:py-10 sm:px-16 xl:px-20">
-            <BlogFilters onFilterChange={handleFilterChange} view={view} setView={setView} />
-
-            <ol
-              className={cn(
-                'grid -mx-2 sm:-mx-4 py-6 lg:py-6 lg:pb-20',
-                isList ? 'grid-cols-1' : 'grid-cols-12 lg:gap-4'
-              )}
-            >
-              {isFiltering ? (
-                // Show skeletons while filtering
-                isList ? (
-                  Array.from({ length: SKELETON_COUNT }).map((_, idx) => (
-                    <div
-                      className="col-span-12 px-2 sm:px-4 [&_a]:last:border-none"
-                      key={`skeleton-list-${idx}`}
-                    >
-                      <BlogListItemSkeleton />
-                    </div>
-                  ))
-                ) : (
-                  Array.from({ length: SKELETON_COUNT }).map((_, idx) => (
-                    <div
-                      className="col-span-12 mb-4 md:col-span-12 lg:col-span-6 xl:col-span-4 h-full"
-                      key={`skeleton-grid-${idx}`}
-                    >
-                      <BlogGridItemSkeleton />
-                    </div>
-                  ))
-                )
-              ) : blogs?.length ? (
-                blogs?.map((blog: PostTypes, idx: number) =>
-                  isList ? (
-                    <div
-                      className="col-span-12 px-2 sm:px-4 [&_a]:last:border-none"
-                      key={`list-${idx}-${blog.slug}`}
-                    >
-                      <BlogListItem post={blog} />
-                    </div>
-                  ) : (
-                    <div
-                      className="col-span-12 mb-4 md:col-span-12 lg:col-span-6 xl:col-span-4 h-full"
-                      key={`grid-${idx}-${blog.slug}`}
-                    >
-                      <BlogGridItem post={blog} />
-                    </div>
-                  )
-                )
-              ) : (
-                <p className="text-sm text-light col-span-full">No results</p>
-              )}
-            </ol>
-
-            {hasMore && !isFiltering && (
-              <div ref={loadMoreRef} className="flex justify-center py-8" aria-hidden="true">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-foreground-muted border-t-foreground" />
-              </div>
-            )}
+      {/* Featured post section */}
+      {featuredPost && (
+        <div className="border-b border-border">
+          <div className="mx-auto max-w-[var(--container-max-w,75rem)] border-x border-border">
+            <FeaturedThumb key={featuredPost.slug} {...featuredPost} />
           </div>
         </div>
-      </DefaultLayout>
-    </>
+      )}
+
+      {/* Filters row */}
+      <div className="border-b border-border">
+        <div className="mx-auto max-w-[var(--container-max-w,75rem)] px-6 border-x border-border">
+          <div className="py-4">
+            <BlogFilters onFilterChange={handleFilterChange} view={view} setView={setView} />
+          </div>
+        </div>
+      </div>
+
+      {/* Blog posts */}
+      <div className="mx-auto max-w-[var(--container-max-w,75rem)] border-x border-border">
+        {isFiltering ? (
+          isList ? (
+            <div>
+              {Array.from({ length: SKELETON_COUNT }).map((_, idx) => (
+                <BlogListItemSkeleton key={`skeleton-list-${idx}`} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 [&>*]:border-b [&>*]:border-border [&>*]:sm:border-r [&>*:nth-child(2n)]:sm:border-r-0 [&>*:nth-child(2n)]:lg:border-r [&>*:nth-child(3n)]:lg:border-r-0">
+              {Array.from({ length: SKELETON_COUNT }).map((_, idx) => (
+                <div key={`skeleton-grid-${idx}`}>
+                  <BlogGridItemSkeleton />
+                </div>
+              ))}
+            </div>
+          )
+        ) : blogs?.length ? (
+          isList ? (
+            <div>
+              {blogs.map((blog: PostTypes, idx: number) => (
+                <BlogListItem post={blog} key={`list-${idx}-${blog.slug}`} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 [&>*]:border-b [&>*]:border-border [&>*]:sm:border-r [&>*:nth-child(2n)]:sm:border-r-0 [&>*:nth-child(2n)]:lg:border-r [&>*:nth-child(3n)]:lg:border-r-0">
+              {blogs.map((blog: PostTypes, idx: number) => (
+                <BlogGridItem post={blog} key={`grid-${idx}-${blog.slug}`} />
+              ))}
+            </div>
+          )
+        ) : (
+          <div className="px-6 py-12">
+            <p className="text-sm text-light">No results</p>
+          </div>
+        )}
+
+        {hasMore && !isFiltering && (
+          <div
+            ref={loadMoreRef}
+            className="flex justify-center py-8 border-t border-border"
+            aria-hidden="true"
+          >
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-foreground-muted border-t-foreground" />
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

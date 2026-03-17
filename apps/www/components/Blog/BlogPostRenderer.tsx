@@ -15,7 +15,9 @@ import { Badge } from 'ui'
 import mdxComponents from '@/lib/mdx/mdxComponents'
 
 const ShareArticleActions = dynamic(() => import('@/components/Blog/ShareArticleActions'))
-const CTABanner = dynamic(() => import('@/components/CTABanner'))
+const CTASection = dynamic(() =>
+  import('@/app/(home)/_components/CTASection').then((m) => ({ default: m.CTASection }))
+)
 const LW11Summary = dynamic(() => import('@/components/LaunchWeek/11/LW11Summary'))
 const LW12Summary = dynamic(() => import('@/components/LaunchWeek/12/LWSummary'))
 const LW13Summary = dynamic(() => import('@/components/LaunchWeek/13/Releases/LWSummary'))
@@ -23,7 +25,6 @@ const LW14Summary = dynamic(() => import('@/components/LaunchWeek/14/Releases/LW
 const LW15Summary = dynamic(() => import('@/components/LaunchWeek/15/LWSummary'))
 const BlogLinks = dynamic(() => import('@/components/LaunchWeek/7/BlogLinks'))
 const LWXSummary = dynamic(() => import('@/components/LaunchWeek/X/LWXSummary'))
-const DefaultLayout = dynamic(() => import('@/components/Layouts/Default'))
 const DraftModeBanner = dynamic(() => import('@/components/Blog/DraftModeBanner'))
 const ReactMarkdown = dynamic<{ children: string }>(
   () =>
@@ -140,185 +141,179 @@ const BlogPostRenderer = ({
   return (
     <>
       {isDraftMode && <DraftModeBanner />}
-      <DefaultLayout className="overflow-x-hidden">
-        <div
-          className="
-            container mx-auto px-4 py-4 md:py-8 xl:py-10 sm:px-16
-            xl:px-20
-          "
-        >
-          <div className="grid grid-cols-12 gap-4">
-            <div className="hidden col-span-12 xl:block lg:col-span-2">
-              {/* Back button */}
+      <div className="overflow-x-clip">
+        {/* Header section */}
+        <div className="border-b border-border">
+          <div className="mx-auto max-w-[var(--container-max-w,75rem)] border-x border-border px-6">
+            <div className="py-8 space-y-4">
               <Link
                 href="/blog"
-                className="text-foreground-lighter hover:text-foreground flex cursor-pointer items-center text-sm transition"
+                className="text-foreground-lighter hover:text-foreground inline-flex cursor-pointer items-center text-sm transition"
               >
-                <ChevronLeft style={{ padding: 0 }} />
+                <ChevronLeft strokeWidth={1.5} className="size-5" />
                 Back
               </Link>
-            </div>
-            <div className="col-span-12 lg:col-span-12 xl:col-span-10">
-              {/* Title and description */}
-              <div className="mb-6 lg:mb-10 max-w-5xl space-y-8">
-                <div className="space-y-4">
-                  <Link href="/blog" className="text-brand hidden lg:inline-flex items-center">
-                    Blog
-                  </Link>
-                  <h1 className="text-2xl sm:text-4xl">{blogMetaData.title}</h1>
-                  <div className="text-light flex space-x-3 text-sm">
-                    <p>{dayjs(blogMetaData.date).format('DD MMM YYYY')}</p>
-                    <p>•</p>
-                    <p>{(blogMetaData as any).readingTime}</p>
-                  </div>
-                  {authors.length > 0 && (
-                    <div className="flex justify-between">
-                      <div className="flex-1 flex flex-wrap gap-3 pt-2 md:gap-0 lg:gap-3">
-                        {authors.map((author, i: number) => {
-                          const authorImageUrl = author.author_image_url
-
-                          const authorId =
-                            (author as any).author_id ||
-                            (author as any).username ||
-                            author.author.toLowerCase().replace(/\s+/g, '_')
-
-                          return (
-                            <div className="mr-4 w-max" key={`author-${i}-${author.author}`}>
-                              <Link href={`/blog/authors/${authorId}`} className="cursor-pointer">
-                                <div className="flex items-center gap-3">
-                                  {authorImageUrl && (
-                                    <div className="w-10">
-                                      <Image
-                                        src={authorImageUrl}
-                                        className="border-default rounded-full border w-full max-h-10 aspect-square object-cover"
-                                        alt={`${author.author} avatar`}
-                                        width={40}
-                                        height={40}
-                                      />
-                                    </div>
-                                  )}
-                                  <div className="flex flex-col">
-                                    <span className="text-foreground mb-0 text-sm">
-                                      {author.author}
-                                    </span>
-                                    <span className="text-foreground-lighter mb-0 text-xs">
-                                      {author.position}
-                                    </span>
-                                  </div>
-                                </div>
-                              </Link>
-                            </div>
-                          )
-                        })}
-                      </div>
+              <h1 className="text-2xl sm:text-4xl max-w-3xl">{blogMetaData.title}</h1>
+              <div className="flex items-center gap-2">
+                <div className="text-foreground-lighter flex space-x-3 text-sm">
+                  <p>{dayjs(blogMetaData.date).format('DD MMM YYYY')}</p>
+                  <p>•</p>
+                  <p>{(blogMetaData as any).readingTime}</p>
+                </div>
+                {(blogMetaData.tags as Tag[])?.length > 0 && (
+                  <>
+                    <span className="text-foreground-lighter text-sm">•</span>
+                    <div className="flex flex-wrap gap-2">
+                      {(blogMetaData.tags as Tag[])?.map((tag) => {
+                        const tagName = typeof tag === 'string' ? tag : tag.name
+                        const tagId = typeof tag === 'string' ? tag : tag.id.toString()
+                        return (
+                          <Link
+                            className="flex"
+                            href={`/blog/tags/${tagName}`}
+                            key={`category-badge-${tagId}`}
+                          >
+                            <Badge>{tagName}</Badge>
+                          </Link>
+                        )
+                      })}
                     </div>
-                  )}
+                  </>
+                )}
+              </div>
+              {authors.length > 0 && (
+                <div className="flex items-center gap-4 !mt-12">
+                  {authors.map((author, i: number) => {
+                    const authorImageUrl = author.author_image_url
+                    const authorId =
+                      (author as any).author_id ||
+                      (author as any).username ||
+                      author.author.toLowerCase().replace(/\s+/g, '_')
+
+                    return (
+                      <Link
+                        href={`/blog/authors/${authorId}`}
+                        className="cursor-pointer"
+                        key={`author-${i}-${author.author}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          {authorImageUrl && (
+                            <Image
+                              src={authorImageUrl}
+                              className="border-default rounded-full border aspect-square object-cover"
+                              alt={`${author.author} avatar`}
+                              width={32}
+                              height={32}
+                            />
+                          )}
+                          <div className="flex flex-col">
+                            <span className="text-foreground text-sm">{author.author}</span>
+                            <span className="text-foreground-lighter text-xs">
+                              {author.position}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Content + Sidebar */}
+        <div className="mx-auto max-w-[var(--container-max-w,75rem)] border-x border-border">
+          <div className="px-6 py-8 md:py-12">
+            <div className="grid grid-cols-12 lg:gap-16 xl:gap-8">
+              {/* Content */}
+              <div className="col-span-12 lg:col-span-7 xl:col-span-7">
+                <article>
+                  <div className={['prose prose-docs'].join(' ')}>
+                    {blogMetaData.youtubeHero ? (
+                      <iframe
+                        title="YouTube video player"
+                        className="w-full"
+                        width="700"
+                        height="350"
+                        src={blogMetaData.youtubeHero}
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen={true}
+                      />
+                    ) : (
+                      blogMetaData.imgThumb && (
+                        <div className="relative mb-8 w-full aspect-[1.91/1] overflow-auto rounded-lg border">
+                          <Image
+                            src={imageUrl}
+                            alt={blogMetaData.title}
+                            fill
+                            quality={100}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="object-cover m-0"
+                          />
+                        </div>
+                      )
+                    )}
+                    {isLivePreview ? (
+                      <ReactMarkdown>{livePreviewContent}</ReactMarkdown>
+                    ) : (
+                      <MDXRemote
+                        {...(blog.content as MDXRemoteSerializeResult)}
+                        components={mdxComponents('blog')}
+                      />
+                    )}
+                  </div>
+                </article>
+                {isLaunchWeek7 && <BlogLinks />}
+                {isLaunchWeekX && <LWXSummary />}
+                {isGAWeek && <LW11Summary />}
+                {isLaunchWeek12 && <LW12Summary />}
+                {isLaunchWeek13 && <LW13Summary />}
+                {isLaunchWeek14 && <LW14Summary />}
+                {isLaunchWeek15 && <LW15Summary />}
+                <div className="block lg:hidden py-8">
+                  <div className="text-foreground-lighter text-sm">Share this article</div>
+                  <ShareArticleActions title={blogMetaData.title} slug={blogMetaData.slug} />
+                </div>
+                <div className="grid gap-8 py-8 lg:grid-cols-1">
+                  <div>
+                    {prevPost && (
+                      <NextCard
+                        post={
+                          prevPost as unknown as {
+                            path: string
+                            title: string
+                            formattedDate: string
+                          }
+                        }
+                        label="Previous post"
+                      />
+                    )}
+                  </div>
+                  <div>
+                    {nextPost && (
+                      <NextCard
+                        post={
+                          nextPost as unknown as {
+                            path: string
+                            title: string
+                            formattedDate: string
+                          }
+                        }
+                        label="Next post"
+                        className="text-right"
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-12 lg:gap-16 xl:gap-8">
-                {/* Content */}
-                <div className="col-span-12 lg:col-span-7 xl:col-span-7">
-                  <article>
-                    <div className={['prose prose-docs'].join(' ')}>
-                      {blogMetaData.youtubeHero ? (
-                        <iframe
-                          title="YouTube video player"
-                          className="w-full"
-                          width="700"
-                          height="350"
-                          src={blogMetaData.youtubeHero}
-                          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen={true}
-                        />
-                      ) : (
-                        blogMetaData.imgThumb && (
-                          <div className="hidden md:block relative mb-8 w-full aspect-[1.91/1] overflow-auto rounded-lg border">
-                            <Image
-                              src={imageUrl}
-                              alt={blogMetaData.title}
-                              fill
-                              quality={100}
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              className="object-cover m-0"
-                            />
-                          </div>
-                        )
-                      )}
-                      {/* Use ReactMarkdown for LivePreview mode, MDXRemote for normal mode */}
-                      {isLivePreview ? (
-                        <ReactMarkdown>{livePreviewContent}</ReactMarkdown>
-                      ) : (
-                        <MDXRemote
-                          {...(blog.content as MDXRemoteSerializeResult)}
-                          components={mdxComponents('blog')}
-                        />
-                      )}
-                    </div>
-                  </article>
-                  {isLaunchWeek7 && <BlogLinks />}
-                  {isLaunchWeekX && <LWXSummary />}
-                  {isGAWeek && <LW11Summary />}
-                  {isLaunchWeek12 && <LW12Summary />}
-                  {isLaunchWeek13 && <LW13Summary />}
-                  {isLaunchWeek14 && <LW14Summary />}
-                  {isLaunchWeek15 && <LW15Summary />}
-                  <div className="block lg:hidden py-8">
-                    <div className="text-foreground-lighter text-sm">Share this article</div>
+              {/* Sidebar */}
+              <div className="relative col-span-12 lg:col-span-5 xl:col-span-3 xl:col-start-10">
+                <div className="space-y-6 lg:sticky lg:top-20">
+                  <div className="hidden lg:block">{toc}</div>
+                  <div className="hidden lg:block">
+                    <div className="text-foreground">Share this article</div>
                     <ShareArticleActions title={blogMetaData.title} slug={blogMetaData.slug} />
-                  </div>
-                  <div className="grid gap-8 py-8 lg:grid-cols-1">
-                    <div>
-                      {prevPost && (
-                        <NextCard
-                          post={
-                            prevPost as unknown as {
-                              path: string
-                              title: string
-                              formattedDate: string
-                            }
-                          }
-                          label="Previous post"
-                        />
-                      )}
-                    </div>
-                    <div>
-                      {nextPost && (
-                        <NextCard
-                          post={
-                            nextPost as unknown as {
-                              path: string
-                              title: string
-                              formattedDate: string
-                            }
-                          }
-                          label="Next post"
-                          className="text-right"
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {/* Sidebar */}
-                <div className="relative col-span-12 space-y-8 lg:col-span-5 xl:col-span-3 xl:col-start-9">
-                  <div className="space-y-6">
-                    <div className="hidden lg:block">
-                      <div className="flex flex-wrap gap-2">
-                        {(blogMetaData.tags as Tag[])?.map((tag) => {
-                          const tagName = typeof tag === 'string' ? tag : tag.name
-                          const tagId = typeof tag === 'string' ? tag : tag.id.toString()
-                          return (
-                            <Link href={`/blog/tags/${tagName}`} key={`category-badge-${tagId}`}>
-                              <Badge>{tagName}</Badge>
-                            </Link>
-                          )
-                        })}
-                      </div>
-                    </div>
-                    <div className="hidden lg:block">{toc}</div>
-                    <div className="hidden lg:block">
-                      <div className="text-foreground text-sm">Share this article</div>
-                      <ShareArticleActions title={blogMetaData.title} slug={blogMetaData.slug} />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -326,8 +321,10 @@ const BlogPostRenderer = ({
           </div>
         </div>
 
-        <CTABanner />
-      </DefaultLayout>
+        <div className="border-t">
+          <CTASection />
+        </div>
+      </div>
     </>
   )
 }

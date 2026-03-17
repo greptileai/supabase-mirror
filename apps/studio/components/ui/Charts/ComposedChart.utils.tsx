@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { formatBytes } from 'lib/helpers'
 import { useState } from 'react'
 import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'ui'
+
 import { CHART_COLORS, DateTimeFormats } from './Charts.constants'
 import { formatPercentage, numberFormatter } from './Charts.utils'
 
@@ -32,6 +33,7 @@ export interface ReportAttributes {
     tickFormatter?: (value: any) => string
   }
   hideHighlightedValue?: boolean
+  stackedPercent?: boolean
 }
 
 export type Provider = 'infra-monitoring' | 'daily-stats' | 'mock' | 'reference-line' | 'logs'

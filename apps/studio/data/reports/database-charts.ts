@@ -69,6 +69,7 @@ export const getReportAttributesV2: (
       label: 'CPU usage',
       docsUrl: `${DOCS_URL}/guides/telemetry/reports#cpu-usage`,
       syncId: 'database-reports',
+      stackedPercent: true,
       format: '%',
       valuePrecision: 2,
       hide: false,
@@ -78,11 +79,6 @@ export const getReportAttributesV2: (
       showGrid: true,
       YAxisProps: {
         width: 45,
-        tickFormatter: (value: any) => {
-          // avoid displaying 100.00%
-          if (value === 100) return '100%'
-          return `${numberFormatter(value, 2)}%`
-        },
       },
       hideChartType: false,
       defaultChartStyle: 'bar',

@@ -71,6 +71,7 @@ export interface ComposedChartProps<D = Datum> extends CommonChartProps<D> {
   sql?: string
   highlightActions?: ChartHighlightAction[]
   showNewBadge?: boolean
+  stackedPercent?: boolean
 }
 
 interface CustomizedDotProps {
@@ -130,6 +131,7 @@ export function ComposedChart({
   highlightActions,
   titleTooltip,
   showNewBadge,
+  stackedPercent = false,
 }: ComposedChartProps) {
   const { resolvedTheme } = useTheme()
   const { hoveredIndex, syncTooltip, setHover, clearHover } = useChartHoverState(
@@ -457,7 +459,8 @@ export function ComposedChart({
             hide={hideYAxis}
             axisLine={{ stroke: CHART_COLORS.AXIS }}
             tickLine={{ stroke: CHART_COLORS.AXIS }}
-            domain={yAxisDomain}
+            domain={stackedPercent ? ([0, 100] as [number, number]) : yAxisDomain}
+            tickFormatter={_YAxisProps.tickFormatter}
             key={yAxisKey}
           />
           <XAxis

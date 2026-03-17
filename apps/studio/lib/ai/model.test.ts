@@ -67,8 +67,8 @@ describe('getModel', () => {
     })
 
     expect(model).toEqual('openai-model')
-    // Default openai model in registry is gpt-5-mini
-    expect(openai).toHaveBeenCalledWith('gpt-5-mini')
+    // Default openai model in registry is gpt-5.4-nano
+    expect(openai).toHaveBeenCalledWith('gpt-5.4-nano')
     expect(promptProviderOptions).toBeUndefined()
   })
 
@@ -80,20 +80,20 @@ describe('getModel', () => {
     expect(error).toEqual(new Error(ModelErrorMessage))
   })
 
-  it('returns specified provider and model when provided (openai gpt-5)', async () => {
+  it('returns specified provider and model when provided (openai gpt-5.3-codex)', async () => {
     vi.mocked(bedrockModule.checkAwsCredentials).mockResolvedValue(false)
     process.env.OPENAI_API_KEY = 'test-key'
     process.env.IS_THROTTLED = 'false'
 
     const { model, error } = await getModel({
       provider: 'openai',
-      model: 'gpt-5',
+      model: 'gpt-5.3-codex',
       routingKey: 'rk',
       isLimited: false,
     })
 
     expect(error).toBeUndefined()
     expect(model).toEqual('openai-model')
-    expect(openai).toHaveBeenCalledWith('gpt-5')
+    expect(openai).toHaveBeenCalledWith('gpt-5.3-codex')
   })
 })

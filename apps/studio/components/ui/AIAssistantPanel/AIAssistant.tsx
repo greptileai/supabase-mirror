@@ -72,14 +72,14 @@ export const AIAssistant = ({ className }: AIAssistantProps) => {
   const selectedModel = useMemo<AssistantModel>(() => {
     // While entitlements are loading, use the stored model without enforcing access
     if (isLoadingEntitlements) {
-      return snap.model ?? 'gpt-5-mini'
+      return snap.model ?? 'gpt-5.4-nano'
     }
 
-    const defaultModel: AssistantModel = hasAccessToAdvanceModel ? 'gpt-5' : 'gpt-5-mini'
+    const defaultModel: AssistantModel = hasAccessToAdvanceModel ? 'gpt-5.3-codex' : 'gpt-5.4-nano'
     const model = snap.model ?? defaultModel
 
-    if (!hasAccessToAdvanceModel && model === 'gpt-5') {
-      return 'gpt-5-mini'
+    if (!hasAccessToAdvanceModel && model === 'gpt-5.3-codex') {
+      return 'gpt-5.4-nano'
     }
 
     return model

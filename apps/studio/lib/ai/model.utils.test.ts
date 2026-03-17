@@ -12,7 +12,7 @@ describe('model.utils', () => {
 
     it('should return correct default for openai provider', () => {
       const result = getDefaultModelForProvider('openai')
-      expect(result).toBe('gpt-5-mini')
+      expect(result).toBe('gpt-5.4-nano')
     })
 
     it('should return correct default for anthropic provider', () => {
@@ -39,8 +39,8 @@ describe('model.utils', () => {
     it('should have openai provider with models', () => {
       expect(PROVIDERS.openai).toBeDefined()
       expect(PROVIDERS.openai.models).toBeDefined()
-      expect(Object.keys(PROVIDERS.openai.models)).toContain('gpt-5')
-      expect(Object.keys(PROVIDERS.openai.models)).toContain('gpt-5-mini')
+      expect(Object.keys(PROVIDERS.openai.models)).toContain('gpt-5.3-codex')
+      expect(Object.keys(PROVIDERS.openai.models)).toContain('gpt-5.4-nano')
     })
 
     it('should have anthropic provider with models', () => {

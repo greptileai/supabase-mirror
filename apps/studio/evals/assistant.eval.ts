@@ -26,7 +26,7 @@ Eval('Assistant', {
   data: () => dataset,
   task: async (input) => {
     const result = await generateAssistantResponse({
-      model: openai('gpt-5-mini'),
+      model: openai('gpt-5.4-nano'),
       messages: [{ id: '1', role: 'user', parts: [{ type: 'text', text: input.prompt }] }],
       tools: await getMockTools(input.mockTables ? { list_tables: input.mockTables } : undefined),
     })

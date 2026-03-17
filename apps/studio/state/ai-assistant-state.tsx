@@ -22,7 +22,7 @@ export type AssistantMessageType = MessageType
 
 export type SqlSnippet = string | { label: string; content: string }
 
-export type AssistantModel = 'gpt-5' | 'gpt-5-mini'
+export type AssistantModel = 'gpt-5.3-codex' | 'gpt-5.4-nano'
 
 type ChatSession = {
   id: string
@@ -64,7 +64,7 @@ const INITIAL_AI_ASSISTANT: AiAssistantData = {
   tables: [],
   chats: {},
   activeChatId: undefined,
-  model: 'gpt-5',
+  model: 'gpt-5.3-codex',
   context: {},
 }
 

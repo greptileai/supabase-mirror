@@ -45,9 +45,9 @@ export interface FormProps {
   /* If currently editing an existing message */
   isEditing?: boolean
   /* The currently selected AI model */
-  selectedModel: 'gpt-5' | 'gpt-5-mini'
+  selectedModel: 'gpt-5.3-codex' | 'gpt-5.4-nano'
   /* Callback when a model is chosen */
-  onSelectModel: (model: 'gpt-5' | 'gpt-5-mini') => void
+  onSelectModel: (model: 'gpt-5.3-codex' | 'gpt-5.4-nano') => void
 }
 
 const AssistantChatFormComponent = forwardRef<HTMLFormElement, FormProps>(

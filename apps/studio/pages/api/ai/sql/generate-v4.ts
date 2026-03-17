@@ -53,7 +53,7 @@ const requestBodySchema = z.object({
   chatId: z.string().optional(),
   chatName: z.string().optional(),
   orgSlug: z.string().optional(),
-  model: z.enum(['gpt-5', 'gpt-5-mini']).optional(),
+  model: z.enum(['gpt-5.3-codex', 'gpt-5.4-nano']).optional(),
 })
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse, claims?: JwtPayload) {
@@ -135,7 +135,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, claims?: Jw
     providerOptions,
   } = await getModel({
     provider: 'openai',
-    model: requestedModel ?? 'gpt-5',
+    model: requestedModel ?? 'gpt-5.3-codex',
     routingKey: projectRef,
     isLimited,
   })

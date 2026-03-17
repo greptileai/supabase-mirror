@@ -9,8 +9,10 @@ import { Button, cn } from 'ui'
 import { useMeasuredWidth } from './Row.utils'
 
 interface RowProps extends React.HTMLAttributes<HTMLDivElement> {
-  // columns can be a fixed number or an array [lg, md, sm]
-  columns: number | [number, number, number]
+  // Maximum number of items visible in the row at once
+  maxRows: number
+  // Minimum width in pixels for each item before the row reduces the visible count
+  minWidth: number
   children: ReactNode
   className?: string
   /** gap between items in pixels */
@@ -21,8 +23,33 @@ interface RowProps extends React.HTMLAttributes<HTMLDivElement> {
   scrollBehavior?: ScrollBehavior
 }
 
+export const resolveColumnsForWidth = ({
+  width,
+  maxRows,
+  minWidth,
+  gap,
+}: {
+  width: number
+  maxRows: number
+  minWidth: number
+  gap: number
+}) => {
+  const fittedColumns = Math.floor((width + gap) / (minWidth + gap))
+
+  return Math.max(1, Math.min(maxRows, fittedColumns))
+}
+
 export const Row = forwardRef<HTMLDivElement, RowProps>(function Row(
-  { columns, children, className, gap = 16, showArrows = true, scrollBehavior = 'smooth', ...rest },
+  {
+    maxRows,
+    minWidth,
+    children,
+    className,
+    gap = 16,
+    showArrows = true,
+    scrollBehavior = 'smooth',
+    ...rest
+  },
   ref
 ) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -32,18 +59,15 @@ export const Row = forwardRef<HTMLDivElement, RowProps>(function Row(
   const [scrollPosition, setScrollPosition] = useState(0)
   const measuredWidth = useMeasuredWidth(containerRef)
 
-  const resolveColumnsForWidth = (width: number): number => {
-    if (!Array.isArray(columns)) return columns
-    // Interpret as [lg, md, sm]
-    const [lgCols, mdCols, smCols] = columns
-    if (width >= 1024) return lgCols
-    if (width >= 768) return mdCols
-    return smCols
-  }
-
   const numberOfColumns = useMemo(
-    () => resolveColumnsForWidth(measuredWidth ?? 0),
-    [measuredWidth, columns]
+    () =>
+      resolveColumnsForWidth({
+        width: measuredWidth ?? 0,
+        maxRows,
+        minWidth,
+        gap,
+      }),
+    [gap, maxRows, measuredWidth, minWidth]
   )
 
   const scrollByStep = (direction: -1 | 1) => {

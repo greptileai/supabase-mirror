@@ -14,6 +14,7 @@ import { ReactFlowProvider } from 'reactflow'
 import { Badge, cn, Tooltip, TooltipContent, TooltipTrigger } from 'ui'
 
 import { InstanceConfiguration } from '../Settings/Infrastructure/InfrastructureConfiguration/InstanceConfiguration'
+import { ComputeUpgradeFloatingNotice } from './ComputeUpgradeFloatingNotice'
 
 export const TopSection = () => {
   const isOrioleDb = useIsOrioleDb()
@@ -73,12 +74,15 @@ export const TopSection = () => {
                       </TooltipContent>
                     </Tooltip>
                   )}
-                  <ComputeBadgeWrapper
-                    projectRef={project?.ref}
-                    slug={organization?.slug}
-                    cloudProvider={project?.cloud_provider}
-                    computeSize={project?.infra_compute_size}
-                  />
+                  <div className="relative">
+                    <ComputeUpgradeFloatingNotice />
+                    <ComputeBadgeWrapper
+                      projectRef={project?.ref}
+                      slug={organization?.slug}
+                      cloudProvider={project?.cloud_provider}
+                      computeSize={project?.infra_compute_size}
+                    />
+                  </div>
                 </div>
               </div>
               <ProjectConnectionHoverCard projectRef={project?.ref} />
@@ -91,7 +95,7 @@ export const TopSection = () => {
         <div>
           <div
             className={cn(
-              'w-full h-[400px] md:h-[500px] border border-muted rounded-md overflow-hidden flex flex-col relative'
+              'w-full h-[400px] md:h-[500px] border border-muted rounded-md overflow-hidden flex flex-col'
             )}
           >
             <ReactFlowProvider>

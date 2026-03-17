@@ -2,17 +2,28 @@
 
 import { CheckIcon } from '@heroicons/react/outline'
 import { REALTIME_CHANNEL_STATES } from '@supabase/supabase-js'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useEffect } from 'react'
-
+import supabase from '~/lib/supabase'
 import * as supabaseLogoWordmarkDark from 'common/assets/images/supabase-logo-wordmark--dark.png'
 import * as supabaseLogoWordmarkLight from 'common/assets/images/supabase-logo-wordmark--light.png'
 import footerData from 'data/Footer'
+import Image from 'next/image'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Badge, IconDiscord, IconGitHubSolid, IconTwitterX, IconYoutubeSolid, cn } from 'ui'
+import { FormEvent, useEffect, useState } from 'react'
+import {
+  Badge,
+  Button,
+  cn,
+  IconDiscord,
+  IconGitHubSolid,
+  IconInstagram,
+  IconTikTok,
+  IconTwitterX,
+  IconYoutubeSolid,
+  Input_Shadcn_,
+} from 'ui'
 import { ThemeToggle } from 'ui-patterns/ThemeToggle'
-import supabase from '~/lib/supabase'
+
 import useDarkLaunchWeeks from '../../hooks/useDarkLaunchWeeks'
 import SectionContainer from '../Layouts/SectionContainer'
 
@@ -23,6 +34,28 @@ interface Props {
 
 const Footer = (props: Props) => {
   const pathname = usePathname()
+
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [newsletterStatus, setNewsletterStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle')
+
+  const handleNewsletterSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!newsletterEmail) return
+    setNewsletterStatus('loading')
+    try {
+      const res = await fetch('/api-v2/submit-form-newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newsletterEmail }),
+      })
+      if (!res.ok) throw new Error()
+      setNewsletterStatus('success')
+    } catch {
+      setNewsletterStatus('error')
+    }
+  }
 
   const isDarkLaunchWeek = useDarkLaunchWeeks()
   const isGAWeek = pathname?.includes('/ga-week')
@@ -128,10 +161,57 @@ const Footer = (props: Props) => {
                 <span className="sr-only">Youtube</span>
                 <IconYoutubeSolid size={22} />
               </a>
+
+              <a
+                href="https://www.tiktok.com/@supabase.com"
+                className="text-foreground-lighter hover:text-foreground transition"
+              >
+                <span className="sr-only">TikTok</span>
+                <IconTikTok size={22} />
+              </a>
+
+              <a
+                href="https://www.instagram.com/supabasecom"
+                className="text-foreground-lighter hover:text-foreground transition"
+              >
+                <span className="sr-only">Instagram</span>
+                <IconInstagram size={22} />
+              </a>
+            </div>
+            <div className="mt-8">
+              <p className="text-foreground-lighter text-sm">
+                Get product updates and news from Supabase.
+              </p>
+              {newsletterStatus === 'success' ? (
+                <p className="text-brand text-sm mt-3">Thanks for subscribing!</p>
+              ) : (
+                <form onSubmit={handleNewsletterSubmit} className="mt-3 flex flex-col gap-2">
+                  <Input_Shadcn_
+                    type="email"
+                    placeholder="Your email"
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    required
+                    className="flex-1 md:max-w-72 xl:max-w-[80%]"
+                  />
+                  <Button
+                    type="primary"
+                    size="medium"
+                    htmlType="submit"
+                    loading={newsletterStatus === 'loading'}
+                    className="w-fit"
+                  >
+                    Subscribe
+                  </Button>
+                </form>
+              )}
+              {newsletterStatus === 'error' && (
+                <p className="text-destructive text-sm mt-2">Something went wrong. Try again.</p>
+              )}
             </div>
           </div>
           <div className="mt-12 grid grid-cols-1 gap-8 xl:col-span-5 xl:mt-0">
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
               {footerData.map((segment) => {
                 return (
                   <div key={`footer_${segment.title}`}>

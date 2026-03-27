@@ -60,7 +60,10 @@ const formSchema = z.object({
   // Fields for updatePostgrestConfig
   dbSchema: z.array(z.string()),
   dbExtraSearchPath: z.array(z.string()),
-  maxRows: z.number().max(1000000, "Can't be more than 1,000,000"),
+  maxRows: z
+    .number()
+    .min(0, "Can't be negative")
+    .max(1000000, "Can't be more than 1,000,000"),
   dbPool: z
     .number()
     .min(0, 'Must be more than 0')
@@ -605,7 +608,7 @@ export const PostgrestConfig = () => {
                           <FormItemLayout
                             layout="flex-row-reverse"
                             label="Max rows"
-                            description="The maximum number of rows returned from a view, table, or stored procedure. Limits payload size for accidental or malicious requests."
+                            description="The maximum number of rows returned from a view, table, or stored procedure. Limits payload size for accidental or malicious requests. Set to 0 for no limit."
                           >
                             <FormControl_Shadcn_>
                               <PrePostTab postTab="rows">
@@ -614,7 +617,12 @@ export const PostgrestConfig = () => {
                                   disabled={!canUpdatePostgrestConfig}
                                   {...field}
                                   type="number"
-                                  onChange={(e) => field.onChange(Number(e.target.value))}
+                                  value={field.value ?? ''}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      e.target.value === '' ? undefined : Number(e.target.value)
+                                    )
+                                  }
                                 />
                               </PrePostTab>
                             </FormControl_Shadcn_>

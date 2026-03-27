@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/nextjs'
-import pgMeta from '@supabase/pg-meta'
+import pgMeta, { type ForeignKey } from '@supabase/pg-meta'
 import { Query } from '@supabase/pg-meta/src/query'
 import type { PostgresPrimaryKey } from '@supabase/postgres-meta'
 import type { SupaRow } from 'components/grid/types'
@@ -10,7 +10,6 @@ import { deleteDatabaseColumn } from 'data/database-columns/database-column-dele
 import { updateDatabaseColumn } from 'data/database-columns/database-column-update-mutation'
 import { createDatabasePolicy } from 'data/database-policies/database-policy-create-mutation'
 import type { Constraint } from 'data/database/constraints-query'
-import { FOREIGN_KEY_CASCADE_ACTION } from 'data/database/database-query-constants'
 import { ForeignKeyConstraint } from 'data/database/foreign-key-constraints-query'
 import { databaseKeys } from 'data/database/keys'
 import { entityTypeKeys } from 'data/entity-types/keys'
@@ -24,10 +23,10 @@ import { tableRowKeys } from 'data/table-rows/keys'
 import { executeWithRetry } from 'data/table-rows/table-rows-query'
 import { tableKeys } from 'data/tables/keys'
 import {
-  RetrieveTableResult,
-  RetrievedTableColumn,
   getTable,
   getTableQuery,
+  RetrievedTableColumn,
+  RetrieveTableResult,
 } from 'data/tables/table-retrieve-query'
 import {
   UpdateTableBody,
@@ -45,7 +44,6 @@ import {
   generateCreateColumnPayload,
   generateUpdateColumnPayload,
 } from './ColumnEditor/ColumnEditor.utils'
-import type { ForeignKey } from './ForeignKeySelector/ForeignKeySelector.types'
 import type { ColumnField, CreateColumnPayload, UpdateColumnPayload } from './SidePanelEditor.types'
 import { checkIfRelationChanged } from './TableEditor/ForeignKeysManagement/ForeignKeysManagement.utils'
 import type { ImportContent } from './TableEditor/TableEditor.types'
@@ -81,23 +79,6 @@ export function getRowFromSidePanel(
   }
 }
 
-/**
- * The functions below are basically just queries but may be supported directly
- * from the pg-meta library in the future
- */
-const getAddPrimaryKeySQL = ({
-  schema,
-  table,
-  columns,
-}: {
-  schema: string
-  table: string
-  columns: string[]
-}) => {
-  const primaryKeyColumns = columns.map((col) => `"${col}"`).join(', ')
-  return `ALTER TABLE "${schema}"."${table}" ADD PRIMARY KEY (${primaryKeyColumns})`
-}
-
 const addPrimaryKey = async (
   projectRef: string,
   connectionString: string | undefined | null,
@@ -105,7 +86,7 @@ const addPrimaryKey = async (
   table: string,
   columns: string[]
 ) => {
-  const query = getAddPrimaryKeySQL({ schema, table, columns })
+  const query = pgMeta.tableEditor.getAddPrimaryKeySQL({ schema, table, columns })
   return await executeSql({
     projectRef: projectRef,
     connectionString: connectionString,
@@ -121,56 +102,13 @@ const dropConstraint = async (
   table: string,
   name: string
 ) => {
-  const query = `ALTER TABLE "${schema}"."${table}" DROP CONSTRAINT "${name}"`
+  const query = pgMeta.tableEditor.getDropConstraintSQL({ schema, table, name })
   return await executeSql({
     projectRef: projectRef,
     connectionString: connectionString,
     sql: query,
     queryKey: ['drop-constraint'],
   })
-}
-
-const getAddForeignKeySQL = ({
-  table,
-  foreignKeys,
-}: {
-  table: { schema: string; name: string }
-  foreignKeys: ForeignKey[]
-}) => {
-  const getOnDeleteSql = (action: string) =>
-    action === FOREIGN_KEY_CASCADE_ACTION.CASCADE
-      ? 'ON DELETE CASCADE'
-      : action === FOREIGN_KEY_CASCADE_ACTION.RESTRICT
-        ? 'ON DELETE RESTRICT'
-        : action === FOREIGN_KEY_CASCADE_ACTION.SET_DEFAULT
-          ? 'ON DELETE SET DEFAULT'
-          : action === FOREIGN_KEY_CASCADE_ACTION.SET_NULL
-            ? 'ON DELETE SET NULL'
-            : ''
-  const getOnUpdateSql = (action: string) =>
-    action === FOREIGN_KEY_CASCADE_ACTION.CASCADE
-      ? 'ON UPDATE CASCADE'
-      : action === FOREIGN_KEY_CASCADE_ACTION.RESTRICT
-        ? 'ON UPDATE RESTRICT'
-        : ''
-  return (
-    foreignKeys
-      .map((relation) => {
-        const { deletionAction, updateAction } = relation
-        const onDeleteSql = getOnDeleteSql(deletionAction)
-        const onUpdateSql = getOnUpdateSql(updateAction)
-        return `
-      ALTER TABLE "${table.schema}"."${table.name}"
-      ADD FOREIGN KEY (${relation.columns.map((column) => `"${column.source}"`).join(',')})
-      REFERENCES "${relation.schema}"."${relation.table}" (${relation.columns.map((column) => `"${column.target}"`).join(',')})
-      ${onUpdateSql}
-      ${onDeleteSql}
-    `
-          .replace(/\s+/g, ' ')
-          .trim()
-      })
-      .join(';') + ';'
-  )
 }
 
 const addForeignKey = async ({
@@ -184,34 +122,13 @@ const addForeignKey = async ({
   table: { schema: string; name: string }
   foreignKeys: ForeignKey[]
 }) => {
-  const query = getAddForeignKeySQL({ table, foreignKeys })
+  const query = pgMeta.tableEditor.getAddForeignKeySQL({ table, foreignKeys })
   return await executeSql({
     projectRef: projectRef,
     connectionString: connectionString,
     sql: query,
     queryKey: ['foreign-keys'],
   })
-}
-
-const getRemoveForeignKeySQL = ({
-  table,
-  foreignKeys,
-}: {
-  table: { schema: string; name: string }
-  foreignKeys: ForeignKey[]
-}) => {
-  return (
-    foreignKeys
-      .map((relation) =>
-        `
-ALTER TABLE IF EXISTS "${table.schema}"."${table.name}"
-DROP CONSTRAINT IF EXISTS "${relation.name}"
-`
-          .replace(/\s+/g, ' ')
-          .trim()
-      )
-      .join(';') + ';'
-  )
 }
 
 const removeForeignKey = async ({
@@ -225,7 +142,7 @@ const removeForeignKey = async ({
   table: { schema: string; name: string }
   foreignKeys: ForeignKey[]
 }) => {
-  const query = getRemoveForeignKeySQL({ table, foreignKeys })
+  const query = pgMeta.tableEditor.getRemoveForeignKeySQL({ table, foreignKeys })
   return await executeSql({
     projectRef: projectRef,
     connectionString: connectionString,
@@ -246,8 +163,8 @@ const updateForeignKey = async ({
   foreignKeys: ForeignKey[]
 }) => {
   const query = `
-  ${getRemoveForeignKeySQL({ table, foreignKeys })}
-  ${getAddForeignKeySQL({ table, foreignKeys })}
+  ${pgMeta.tableEditor.getRemoveForeignKeySQL({ table, foreignKeys })}
+  ${pgMeta.tableEditor.getAddForeignKeySQL({ table, foreignKeys })}
   `
     .replace(/\s+/g, ' ')
     .trim()
@@ -257,22 +174,6 @@ const updateForeignKey = async ({
     sql: query,
     queryKey: ['foreign-keys'],
   })
-}
-
-const getUpdateIdentitySequenceSQL = ({
-  schema,
-  table,
-  column,
-}: {
-  schema: string
-  table: string
-  column: string
-}) => {
-  return `SELECT setval('"${schema}"."${table}_${column}_seq"', (SELECT COALESCE(MAX("${column}"), 1) FROM "${schema}"."${table}"))`
-}
-
-const getEnableRLSSQL = ({ schema, table }: { schema: string; table: string }) => {
-  return `ALTER TABLE "${schema}"."${table}" ENABLE ROW LEVEL SECURITY`
 }
 
 /**
@@ -458,12 +359,12 @@ export const duplicateTable = async (
   await executeSql({
     projectRef,
     connectionString,
-    sql: [
-      `CREATE TABLE "${sourceTableSchema}"."${duplicatedTableName}" (LIKE "${sourceTableSchema}"."${sourceTableName}" INCLUDING ALL);`,
-      payload.comment != undefined
-        ? `comment on table "${sourceTableSchema}"."${duplicatedTableName}" is '${payload.comment}';`
-        : '',
-    ].join('\n'),
+    sql: pgMeta.tableEditor.getDuplicateTableSQL({
+      sourceTableName,
+      sourceTableSchema,
+      duplicatedTableName,
+      comment: payload.comment,
+    }),
   })
   await queryClient.invalidateQueries({ queryKey: tableKeys.list(projectRef, sourceTableSchema) })
 
@@ -482,7 +383,11 @@ export const duplicateTable = async (
     await executeSql({
       projectRef,
       connectionString,
-      sql: `INSERT INTO "${sourceTableSchema}"."${duplicatedTableName}" SELECT * FROM "${sourceTableSchema}"."${sourceTableName}";`,
+      sql: pgMeta.tableEditor.getDuplicateRowsSQL({
+        sourceTableName,
+        sourceTableSchema,
+        duplicatedTableName,
+      }),
     })
 
     // Insert into does not copy over auto increment sequences, so we manually do it next if any
@@ -492,7 +397,12 @@ export const duplicateTable = async (
       await executeSql({
         projectRef,
         connectionString,
-        sql: `SELECT setval('"${sourceTableSchema}"."${duplicatedTableName}_${column.name}_seq"', (SELECT MAX("${column.name}") FROM "${sourceTableSchema}"."${sourceTableName}"));`,
+        sql: pgMeta.tableEditor.getDuplicateIdentitySequenceSQL({
+          sourceTableName,
+          sourceTableSchema,
+          duplicatedTableName,
+          columnName: column.name,
+        }),
       })
     })
   }
@@ -560,7 +470,10 @@ export const createTable = async ({
 
   // 2. Enable RLS if configured
   if (isRLSEnabled) {
-    const enableRLSSQL = getEnableRLSSQL({ schema: payload.schema, table: payload.name })
+    const enableRLSSQL = pgMeta.tableEditor.getEnableRLSSQL({
+      schema: payload.schema,
+      table: payload.name,
+    })
     sqlStatements.push(enableRLSSQL)
   }
 
@@ -592,7 +505,7 @@ export const createTable = async ({
     .filter((column) => column.isPrimaryKey)
     .map((column) => column.name)
   if (primaryKeyColumns.length > 0) {
-    const primaryKeySQL = getAddPrimaryKeySQL({
+    const primaryKeySQL = pgMeta.tableEditor.getAddPrimaryKeySQL({
       schema: payload.schema,
       table: payload.name,
       columns: primaryKeyColumns,
@@ -602,7 +515,7 @@ export const createTable = async ({
 
   // 5. Add foreign key constraints
   if (foreignKeyRelations.length > 0) {
-    const fkSql = getAddForeignKeySQL({
+    const fkSql = pgMeta.tableEditor.getAddForeignKeySQL({
       table: { schema: payload.schema, name: payload.name },
       foreignKeys: foreignKeyRelations,
     })
@@ -795,7 +708,7 @@ export const createTable = async ({
         if (identityColumns.length > 0) {
           const updateSequenceSQL = identityColumns
             .map((column) =>
-              getUpdateIdentitySequenceSQL({
+              pgMeta.tableEditor.getUpdateIdentitySequenceSQL({
                 schema: table.schema,
                 table: table.name,
                 column: column.name,

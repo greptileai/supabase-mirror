@@ -1,12 +1,12 @@
+import pgMeta from '@supabase/pg-meta'
 import type { PostgresColumn } from '@supabase/postgres-meta'
-import { isNull } from 'lodash'
-import type { Dictionary } from 'types'
-
-import { FOREIGN_KEY_CASCADE_ACTION } from 'data/database/database-query-constants'
 import type { ForeignKeyConstraint } from 'data/database/foreign-key-constraints-query'
 import type { RetrievedTableColumn, RetrieveTableResult } from 'data/tables/table-retrieve-query'
 import { uuidv4 } from 'lib/helpers'
+import { isNull } from 'lodash'
 import { toast } from 'sonner'
+import type { Dictionary } from 'types'
+
 import {
   ColumnField,
   CreateColumnPayload,
@@ -229,8 +229,10 @@ export const getColumnForeignKey = (
     const foreignKeyMeta = foreignKeys.find((fk) => fk.id === foreignKey.id)
     return {
       ...foreignKey,
-      deletion_action: foreignKeyMeta?.deletion_action ?? FOREIGN_KEY_CASCADE_ACTION.NO_ACTION,
-      update_action: foreignKeyMeta?.update_action ?? FOREIGN_KEY_CASCADE_ACTION.NO_ACTION,
+      deletion_action:
+        foreignKeyMeta?.deletion_action ?? pgMeta.tableEditor.FOREIGN_KEY_CASCADE_ACTION.NO_ACTION,
+      update_action:
+        foreignKeyMeta?.update_action ?? pgMeta.tableEditor.FOREIGN_KEY_CASCADE_ACTION.NO_ACTION,
     }
   }
 }
@@ -243,13 +245,13 @@ const formatArrayToPostgresArray = (arrayString: string) => {
 
 export const getForeignKeyCascadeAction = (action?: string) => {
   switch (action) {
-    case FOREIGN_KEY_CASCADE_ACTION.CASCADE:
+    case pgMeta.tableEditor.FOREIGN_KEY_CASCADE_ACTION.CASCADE:
       return 'Cascade'
-    case FOREIGN_KEY_CASCADE_ACTION.RESTRICT:
+    case pgMeta.tableEditor.FOREIGN_KEY_CASCADE_ACTION.RESTRICT:
       return 'Restrict'
-    case FOREIGN_KEY_CASCADE_ACTION.SET_DEFAULT:
+    case pgMeta.tableEditor.FOREIGN_KEY_CASCADE_ACTION.SET_DEFAULT:
       return 'Set default'
-    case FOREIGN_KEY_CASCADE_ACTION.SET_NULL:
+    case pgMeta.tableEditor.FOREIGN_KEY_CASCADE_ACTION.SET_NULL:
       return 'Set NULL'
     default:
       return undefined

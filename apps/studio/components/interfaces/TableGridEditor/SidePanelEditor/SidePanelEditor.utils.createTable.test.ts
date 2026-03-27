@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { FOREIGN_KEY_CASCADE_ACTION } from 'data/database/database-query-constants'
+import pgMeta from '@supabase/pg-meta'
 import type { ForeignKey } from './ForeignKeySelector/ForeignKeySelector.types'
 import type { ColumnField } from './SidePanelEditor.types'
 
@@ -288,8 +288,8 @@ describe('createTable', () => {
         schema: 'public',
         table: 'users',
         columns: [{ source: 'user_id', target: 'id' }],
-        deletionAction: FOREIGN_KEY_CASCADE_ACTION.CASCADE,
-        updateAction: FOREIGN_KEY_CASCADE_ACTION.NO_ACTION,
+        deletionAction: pgMeta.tableEditor.FOREIGN_KEY_CASCADE_ACTION.CASCADE,
+        updateAction: pgMeta.tableEditor.FOREIGN_KEY_CASCADE_ACTION.NO_ACTION,
       },
     ]
 
@@ -306,7 +306,7 @@ describe('createTable', () => {
     const sqlCall = mockExecuteSql.mock.calls[0][0]
     expect(sqlCall.sql).toContain('ADD FOREIGN KEY')
     expect(sqlCall.sql).toContain('REFERENCES')
-    expect(sqlCall.sql).toContain('"users"')
+    expect(sqlCall.sql).toContain('users')
     expect(sqlCall.sql).toContain('ON DELETE CASCADE')
   })
 

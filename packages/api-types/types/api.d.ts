@@ -2144,7 +2144,6 @@ export interface components {
       external_kakao_client_id: string | null
       external_kakao_email_optional: boolean | null
       external_kakao_enabled: boolean | null
-      external_kakao_secret: string | null
       external_keycloak_client_id: string | null
       external_keycloak_email_optional: boolean | null
       external_keycloak_enabled: boolean | null
@@ -3892,7 +3891,6 @@ export interface components {
       external_kakao_client_id?: string | null
       external_kakao_email_optional?: boolean | null
       external_kakao_enabled?: boolean | null
-      external_kakao_secret?: string | null
       external_keycloak_client_id?: string | null
       external_keycloak_email_optional?: boolean | null
       external_keycloak_enabled?: boolean | null

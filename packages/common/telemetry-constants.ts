@@ -1212,6 +1212,30 @@ export interface IndexAdvisorBannerDismissButtonClickedEvent {
 }
 
 /**
+ * Compute exhaustion banner dismiss button clicked event.
+ *
+ * @group Events
+ * @source studio
+ */
+export interface ComputeExhaustionBannerDismissButtonClickedEvent {
+  action: 'compute_exhaustion_banner_dismiss_button_clicked'
+  properties: { is_critical: boolean }
+  groups: TelemetryGroups
+}
+
+/**
+ * Compute exhaustion banner upgrade button clicked event.
+ *
+ * @group Events
+ * @source studio
+ */
+export interface ComputeExhaustionBannerUpgradeButtonClickedEvent {
+  action: 'compute_exhaustion_banner_upgrade_button_clicked'
+  properties: { is_critical: boolean }
+  groups: TelemetryGroups
+}
+
+/**
  * Index Advisor tab clicked event.
  *
  * @group Events
@@ -3175,6 +3199,8 @@ export type TelemetryEvent =
   | IntegrationInstallFailedEvent
   | IntegrationUninstallCompletedEvent
   | RlsEventTriggerBannerCreateButtonClickedEvent
+  | ComputeExhaustionBannerDismissButtonClickedEvent
+  | ComputeExhaustionBannerUpgradeButtonClickedEvent
   | OrgSubmenuOpenedEvent
   | OrgMenuBackClickedEvent
   | OrgMenuItemClickedEvent

@@ -1,6 +1,8 @@
 import { LOCAL_STORAGE_KEYS, useParams } from 'common'
 import { AppBannerWrapper } from 'components/interfaces/App/AppBannerWrapper'
 import { Sidebar } from 'components/interfaces/Sidebar'
+import { BannerComputeExhaustion } from 'components/ui/BannerStack/Banners/BannerComputeExhaustion'
+import { useResourceWarningsQuery } from 'data/usage/resource-warnings-query'
 import { useLocalStorageQuery } from 'hooks/misc/useLocalStorage'
 import { useCheckLatestDeploy } from 'hooks/use-check-latest-deploy'
 import { useRouter } from 'next/router'
@@ -9,7 +11,7 @@ import { useAppStateSnapshot } from 'state/app-state'
 import { ResizablePanel, ResizablePanelGroup, SidebarProvider } from 'ui'
 
 import { BannerStack } from '../ui/BannerStack/BannerStack'
-import { BannerStackProvider } from '../ui/BannerStack/BannerStackProvider'
+import { BannerStackProvider, useBannerStack } from '../ui/BannerStack/BannerStackProvider'
 import { LayoutHeader } from './Navigation/LayoutHeader/LayoutHeader'
 import MobileNavigationBar from './Navigation/NavigationBar/MobileNavigationBar'
 import { MobileSheetProvider } from './Navigation/NavigationBar/MobileSheetContext'
@@ -17,6 +19,43 @@ import { StudioMobileSheetNav } from './Navigation/NavigationBar/StudioMobileShe
 import { LayoutSidebar } from './ProjectLayout/LayoutSidebar'
 import { LayoutSidebarProvider } from './ProjectLayout/LayoutSidebar/LayoutSidebarProvider'
 import { ProjectContextProvider } from './ProjectLayout/ProjectContext'
+
+const ComputeExhaustionBannerController = () => {
+  const { ref } = useParams()
+  const { addBanner, dismissBanner } = useBannerStack()
+
+  const [isBannerDismissed] = useLocalStorageQuery(
+    LOCAL_STORAGE_KEYS.COMPUTE_EXHAUSTION_BANNER_DISMISSED(ref ?? ''),
+    false
+  )
+
+  const { data: resourceWarnings } = useResourceWarningsQuery({ ref })
+  const projectWarnings = resourceWarnings?.find((w) => w.project === ref)
+
+  const cpuLevel = projectWarnings?.cpu_exhaustion ?? null
+  const memoryLevel = projectWarnings?.memory_and_swap_exhaustion ?? null
+  const worstLevel =
+    cpuLevel === 'critical' || memoryLevel === 'critical'
+      ? 'critical'
+      : cpuLevel === 'warning' || memoryLevel === 'warning'
+        ? 'warning'
+        : null
+
+  useEffect(() => {
+    if (worstLevel && !isBannerDismissed) {
+      addBanner({
+        id: 'compute-exhaustion-banner',
+        isDismissed: false,
+        content: <BannerComputeExhaustion isCritical={worstLevel === 'critical'} />,
+        priority: 10,
+      })
+    } else {
+      dismissBanner('compute-exhaustion-banner')
+    }
+  }, [worstLevel, isBannerDismissed, addBanner, dismissBanner])
+
+  return null
+}
 
 export interface DefaultLayoutProps {
   headerTitle?: string
@@ -78,6 +117,7 @@ export const DefaultLayout = ({
         <ProjectContextProvider projectRef={ref}>
           <MobileSheetProvider>
             <BannerStackProvider>
+              <ComputeExhaustionBannerController />
               <div className="flex flex-col h-screen w-screen">
                 {/* Top Banner */}
                 <AppBannerWrapper />

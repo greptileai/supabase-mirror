@@ -1,7 +1,6 @@
+import { DocsButton } from 'components/ui/DocsButton'
 import Link from 'next/link'
 import { ReactNode } from 'react'
-
-import { DocsButton } from 'components/ui/DocsButton'
 import {
   Badge,
   BreadcrumbItem_Shadcn_ as BreadcrumbItem,
@@ -72,18 +71,7 @@ export const PlatformWebhooksHeader = ({
           <PageHeaderDescription>{headerDescription}</PageHeaderDescription>
         </PageHeaderSummary>
         <PageHeaderAside>
-          {hasSelectedEndpoint ? (
-            endpointActions
-          ) : (
-            <>
-              <DocsButton href="https://supabase.com/docs" />
-              <Button asChild type="default">
-                <a target="_blank" rel="noopener noreferrer" href="https://supabase.com">
-                  Leave feedback
-                </a>
-              </Button>
-            </>
-          )}
+          {hasSelectedEndpoint ? endpointActions : <DocsButton href="https://supabase.com/docs" />}
         </PageHeaderAside>
       </PageHeaderMeta>
     </PageHeader>

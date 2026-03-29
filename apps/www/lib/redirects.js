@@ -1806,7 +1806,12 @@ module.exports = [
   {
     permanent: true,
     source: '/docs/features',
-    destination: '/docs/guides/getting-started/features',
+    destination: '/features',
+  },
+  {
+    permanent: true,
+    source: '/docs/guides/getting-started/features',
+    destination: '/features',
   },
   {
     permanent: true,

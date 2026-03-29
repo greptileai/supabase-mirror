@@ -1,7 +1,12 @@
 import { LOCAL_STORAGE_KEYS, useParams } from 'common'
 import { AppBannerWrapper } from 'components/interfaces/App/AppBannerWrapper'
 import { Sidebar } from 'components/interfaces/Sidebar'
+import { BannerMicroUpgrade } from 'components/ui/BannerStack/Banners/BannerMicroUpgrade'
+import { useBannerStack } from 'components/ui/BannerStack/BannerStackProvider'
+import { useOrgSubscriptionQuery } from 'data/subscriptions/org-subscription-query'
 import { useLocalStorageQuery } from 'hooks/misc/useLocalStorage'
+import { useSelectedOrganizationQuery } from 'hooks/misc/useSelectedOrganization'
+import { useSelectedProjectQuery } from 'hooks/misc/useSelectedProject'
 import { useCheckLatestDeploy } from 'hooks/use-check-latest-deploy'
 import { useRouter } from 'next/router'
 import { PropsWithChildren, useEffect, useState } from 'react'
@@ -21,6 +26,39 @@ import { ProjectContextProvider } from './ProjectLayout/ProjectContext'
 export interface DefaultLayoutProps {
   headerTitle?: string
   hideMobileMenu?: boolean
+}
+
+const MicroUpgradeBannerController = () => {
+  const { ref } = useParams()
+  const { addBanner, dismissBanner } = useBannerStack()
+  const { data: org } = useSelectedOrganizationQuery()
+  const { data: project } = useSelectedProjectQuery()
+  const { data: subscription } = useOrgSubscriptionQuery({ orgSlug: org?.slug })
+
+  const [isBannerDismissed] = useLocalStorageQuery(
+    LOCAL_STORAGE_KEYS.MICRO_UPGRADE_BANNER_DISMISSED(ref ?? ''),
+    false
+  )
+
+  const isProPlan = subscription?.plan.id === 'pro'
+  const isOnNano = project?.infra_compute_size === 'nano'
+  const shouldShow = isProPlan && isOnNano && !isBannerDismissed
+  // const shouldShow = true // Temporarily hide the banner while we work on the upgrade process
+
+  useEffect(() => {
+    if (shouldShow) {
+      addBanner({
+        id: 'micro-upgrade-banner',
+        isDismissed: false,
+        content: <BannerMicroUpgrade />,
+        priority: 5,
+      })
+    } else {
+      dismissBanner('micro-upgrade-banner')
+    }
+  }, [shouldShow, addBanner, dismissBanner])
+
+  return null
 }
 
 /**
@@ -78,6 +116,7 @@ export const DefaultLayout = ({
         <ProjectContextProvider projectRef={ref}>
           <MobileSheetProvider>
             <BannerStackProvider>
+              <MicroUpgradeBannerController />
               <div className="flex flex-col h-screen w-screen">
                 {/* Top Banner */}
                 <AppBannerWrapper />

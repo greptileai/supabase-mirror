@@ -80,9 +80,14 @@ module.exports = config({
 
       animation: {
         shimmer: 'shimmer 2s infinite linear',
+        float: 'float 3s ease-in-out infinite',
         sway: 'sway 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-6px)' },
+        },
         shimmer: {
           '0%': {
             'background-position': '-1000px 0',

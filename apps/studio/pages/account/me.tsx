@@ -13,7 +13,7 @@ import { AlertError } from 'components/ui/AlertError'
 import { useIsFeatureEnabled } from 'hooks/misc/useIsFeatureEnabled'
 import { useProfile } from 'lib/profile'
 import type { NextPageWithLayout } from 'types'
-import { Card, CardContent } from 'ui'
+import { Card, CardContent, CardFooter, cn } from 'ui'
 import { PageContainer } from 'ui-patterns/PageContainer'
 import {
   PageHeader,
@@ -22,7 +22,8 @@ import {
   PageHeaderSummary,
   PageHeaderTitle,
 } from 'ui-patterns/PageHeader'
-import { GenericSkeletonLoader } from 'ui-patterns/ShimmeringLoader'
+import { ShimmeringLoader } from 'ui-patterns/ShimmeringLoader'
+
 
 const User: NextPageWithLayout = () => {
   return <ProfileCard />
@@ -45,7 +46,7 @@ const ProfileCard = () => {
       'profile:show_analytics_and_marketing',
       'profile:show_account_deletion',
     ])
-  const { error, isLoading, isError, isSuccess } = useProfile()
+  const { error, isLoading, isError } = useProfile()
 
   return (
     <>
@@ -60,14 +61,6 @@ const ProfileCard = () => {
         </PageHeaderMeta>
       </PageHeader>
       <PageContainer size="small">
-        {isLoading && (
-          <Card>
-            <CardContent className="p-4">
-              <GenericSkeletonLoader />
-            </CardContent>
-          </Card>
-        )}
-
         {isError && (
           <Card>
             <CardContent className="p-4">
@@ -76,24 +69,49 @@ const ProfileCard = () => {
           </Card>
         )}
 
-        {isSuccess && (
+        {!isError && (
           <>
-            {profileShowInformation ? <ProfileInformation /> : null}
-            <AccountIdentities />
+            {isLoading ? (
+              <>
+                {profileShowInformation && (
+                  <Card className="mt-10 mb-4">
+                    <CardContent>
+                      <ShimmeringLoader className="w-1/2 h-4" />
+                    </CardContent>
+                  </Card>
+                )}
+                <Card>
+                  <CardContent className="space-y-6">
+                    <ShimmeringLoader className="p-6" />
+                    <ShimmeringLoader className="p-6" />
+                    <ShimmeringLoader className="p-6" />
+                    <ShimmeringLoader className="p-6" />
+                  </CardContent>
+                  <CardFooter>
+                    <ShimmeringLoader className="mr-0 ml-auto w-12 h-5 rounded-md" />
+                  </CardFooter>
+                </Card>
+              </>
+            ) : (
+              <>
+                {profileShowInformation ? <ProfileInformation /> : null}
+                <AccountIdentities />
+              </>
+            )}
+
+            <AccountConnections />
+
+            <ThemeSettings />
+
+            <HotkeySettings />
+
+            <InlineEditorSettings />
+
+            {profileShowAnalyticsAndMarketing && <AnalyticsSettings />}
+
+            {profileShowAccountDeletion && <AccountDeletion />}
           </>
         )}
-
-        <AccountConnections />
-
-        <ThemeSettings />
-
-        <HotkeySettings />
-
-        <InlineEditorSettings />
-
-        {profileShowAnalyticsAndMarketing && <AnalyticsSettings />}
-
-        {profileShowAccountDeletion && <AccountDeletion />}
       </PageContainer>
     </>
   )

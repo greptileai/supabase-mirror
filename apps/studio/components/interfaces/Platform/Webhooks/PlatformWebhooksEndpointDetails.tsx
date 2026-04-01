@@ -1,11 +1,25 @@
-import { Search } from 'lucide-react'
+import {
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  type ColumnDef,
+  type PaginationState,
+  type SortingState,
+  useReactTable,
+} from '@tanstack/react-table'
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { useEffect, useState, type ReactNode } from 'react'
 
 import { getStatusLevel } from 'components/interfaces/UnifiedLogs/UnifiedLogs.utils'
+import { DataTableColumnHeader } from 'components/ui/DataTable/DataTableColumn/DataTableColumnHeader'
 import { DataTableColumnStatusCode } from 'components/ui/DataTable/DataTableColumn/DataTableColumnStatusCode'
 import {
   Badge,
+  Button,
   Card,
   CardContent,
+  CardFooter,
   Table,
   TableBody,
   TableCell,
@@ -20,7 +34,7 @@ import { statusBadgeVariant } from './PlatformWebhooksView.utils'
 
 interface DetailItemProps {
   label: string
-  children: React.ReactNode
+  children: ReactNode
   ddClassName?: string
 }
 
@@ -39,6 +53,47 @@ interface PlatformWebhooksEndpointDetailsProps {
   onOpenDelivery: (deliveryId: string) => void
 }
 
+const DELIVERIES_PAGE_SIZE = 5
+
+const DELIVERY_COLUMNS: ColumnDef<WebhookDelivery>[] = [
+  {
+    accessorKey: 'status',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+    cell: ({ row }) => (
+      <Badge variant={statusBadgeVariant[row.original.status]}>{row.original.status}</Badge>
+    ),
+  },
+  {
+    accessorKey: 'eventType',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Event type" />,
+    cell: ({ row }) => <code className="text-code-inline">{row.original.eventType}</code>,
+  },
+  {
+    accessorKey: 'responseCode',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Response" />,
+    sortingFn: (rowA, rowB, columnId) => {
+      const responseA = rowA.getValue<number | undefined>(columnId) ?? -1
+      const responseB = rowB.getValue<number | undefined>(columnId) ?? -1
+      return responseA - responseB
+    },
+    cell: ({ row }) =>
+      row.original.responseCode ? (
+        <DataTableColumnStatusCode
+          value={row.original.responseCode}
+          level={getStatusLevel(row.original.responseCode)}
+          className="text-xs"
+        />
+      ) : (
+        <span className="text-xs text-foreground-muted">–</span>
+      ),
+  },
+  {
+    accessorKey: 'attemptAt',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Attempted" />,
+    cell: ({ row }) => <TimestampInfo className="text-sm" utcTimestamp={row.original.attemptAt} />,
+  },
+]
+
 export const PlatformWebhooksEndpointDetails = ({
   deliverySearch,
   filteredDeliveries,
@@ -47,6 +102,36 @@ export const PlatformWebhooksEndpointDetails = ({
   onOpenDelivery,
 }: PlatformWebhooksEndpointDetailsProps) => {
   const hasCustomHeaders = selectedEndpoint.customHeaders.length > 0
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'attemptAt', desc: true }])
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: DELIVERIES_PAGE_SIZE,
+  })
+
+  const table = useReactTable({
+    data: filteredDeliveries,
+    columns: DELIVERY_COLUMNS,
+    state: { pagination, sorting },
+    getRowId: (row) => row.id,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  })
+
+  const paginatedDeliveries = table.getRowModel().rows
+  const deliveryStartIndex =
+    table.getState().pagination.pageIndex * table.getState().pagination.pageSize
+  const deliveryRangeStart = filteredDeliveries.length === 0 ? 0 : deliveryStartIndex + 1
+  const deliveryRangeEnd = Math.min(
+    deliveryStartIndex + table.getState().pagination.pageSize,
+    filteredDeliveries.length
+  )
+
+  useEffect(() => {
+    setPagination((currentPagination) => ({ ...currentPagination, pageIndex: 0 }))
+  }, [deliverySearch, selectedEndpoint.id])
 
   return (
     <div className="space-y-16">
@@ -117,57 +202,78 @@ export const PlatformWebhooksEndpointDetails = ({
         <Card className="overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Status</TableHead>
-                <TableHead>Event type</TableHead>
-                <TableHead>Response</TableHead>
-                <TableHead>Attempted</TableHead>
-              </TableRow>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
             </TableHeader>
             <TableBody>
-              {filteredDeliveries.length > 0 ? (
-                filteredDeliveries.map((delivery) => (
+              {paginatedDeliveries.length > 0 ? (
+                paginatedDeliveries.map((row) => (
                   <TableRow
-                    key={delivery.id}
+                    key={row.id}
                     className="cursor-pointer inset-focus"
-                    onClick={() => onOpenDelivery(delivery.id)}
+                    onClick={() => onOpenDelivery(row.original.id)}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === ' ') {
                         event.preventDefault()
-                        onOpenDelivery(delivery.id)
+                        onOpenDelivery(row.original.id)
                       }
                     }}
                     tabIndex={0}
                   >
-                    <TableCell>
-                      <Badge variant={statusBadgeVariant[delivery.status]}>{delivery.status}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <code className="text-code-inline">{delivery.eventType}</code>
-                    </TableCell>
-                    <TableCell>
-                      {delivery.responseCode ? (
-                        <DataTableColumnStatusCode
-                          value={delivery.responseCode}
-                          level={getStatusLevel(delivery.responseCode)}
-                          className="text-xs"
-                        />
-                      ) : (
-                        <span className="text-xs text-foreground-muted">–</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <TimestampInfo className="text-sm" utcTimestamp={delivery.attemptAt} />
-                    </TableCell>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 ))
               ) : (
-                <TableRow>
-                  <TableCell colSpan={4}>No deliveries found</TableCell>
+                <TableRow className="[&>td]:hover:bg-inherit">
+                  <TableCell colSpan={4}>
+                    <p className="text-sm text-foreground">No deliveries found</p>
+                    <p className="text-sm text-foreground-lighter">
+                      Try adjusting your search to see more webhook attempts.
+                    </p>
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
+          {filteredDeliveries.length > 0 && (
+            <CardFooter className="border-t p-4 flex items-center justify-between">
+              <p className="text-foreground-muted text-sm">
+                Showing {deliveryRangeStart} to {deliveryRangeEnd} of {filteredDeliveries.length}{' '}
+                deliveries
+              </p>
+              <div className="flex items-center gap-x-2" aria-label="Pagination">
+                <Button
+                  icon={<ChevronLeft />}
+                  aria-label="Previous page"
+                  type="default"
+                  size="tiny"
+                  disabled={!table.getCanPreviousPage()}
+                  onClick={() => table.previousPage()}
+                />
+                <Button
+                  icon={<ChevronRight />}
+                  aria-label="Next page"
+                  type="default"
+                  size="tiny"
+                  disabled={!table.getCanNextPage()}
+                  onClick={() => table.nextPage()}
+                />
+              </div>
+            </CardFooter>
+          )}
         </Card>
       </div>
     </div>

@@ -1,14 +1,17 @@
 import { useStripeSyncingState } from 'data/database-integrations/stripe/sync-state-query'
 import { SchemasVariables, useSchemasQuery } from 'data/database/schemas-query'
 import { useEffect } from 'react'
+import { getCurrentVersion, parseSchemaComment } from 'stripe-experiment-sync/supabase'
 
 import {
   findStripeSchema,
   isInProgress,
   isInstalled,
-  parseStripeSchema,
   type StripeSyncStatusResult,
 } from '@/components/interfaces/Integrations/templates/StripeSyncEngine/stripe-sync-status'
+
+// Maximum time allowed for installation or uninstallation operations before the UI times out
+const OPERATION_TIME_OUT_MS: number = 5 * 60 * 1000 // 5 minutes
 
 /**
  * Unified hook for Stripe Sync installation status.
@@ -30,10 +33,10 @@ export function useStripeSyncStatus({
 
   // Find and parse stripe schema status
   const stripeSchema = findStripeSchema(schemas)
-  const parsedSchema = parseStripeSchema(stripeSchema)
+  const schemaComment = parseSchemaComment(stripeSchema?.comment)
 
-  const installed = isInstalled(parsedSchema.status)
-  const inProgress = isInProgress(parsedSchema.status)
+  const installed = isInstalled(schemaComment.status)
+  const inProgress = isInProgress(schemaComment.status)
 
   // Poll schemas during install/uninstall operations
   useEffect(() => {
@@ -48,8 +51,23 @@ export function useStripeSyncStatus({
     return () => clearInterval(interval)
   }, [inProgress, refetch])
 
+  const now = Date.now()
+  const timedOut = schemaComment.startTime
+    ? now - schemaComment.startTime > OPERATION_TIME_OUT_MS
+    : false
+
+  if (timedOut) {
+    if (schemaComment.status == 'installing') {
+      schemaComment.status = 'install error'
+      schemaComment.errorMessage = 'Installation timed out'
+    } else if (schemaComment.status == 'uninstalling') {
+      schemaComment.status = 'uninstall error'
+      schemaComment.errorMessage = 'Uninstallation timed out'
+    }
+  }
+
   // Query sync state only when installed
-  const { data: syncState, isLoading: isSyncStateLoading } = useStripeSyncingState(
+  const { data: syncState } = useStripeSyncingState(
     { projectRef: projectRef!, connectionString },
     {
       refetchInterval: 4000,
@@ -57,9 +75,13 @@ export function useStripeSyncStatus({
     }
   )
 
+  const latestAvailableVersion = getCurrentVersion()
+
   return {
-    parsedSchema,
+    schemaComment,
     syncState: installed ? syncState : undefined,
     isLoading: isSchemasLoading,
+    latestAvailableVersion,
+    timedOut,
   }
 }

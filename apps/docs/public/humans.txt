@@ -55,7 +55,6 @@ Craig Cannon
 Cuong Do
 Daniel Velázquez Lara
 Danny White
-Darren Cunningham
 Dave Wilson
 David A. Ventimiglia
 David Birdsong
@@ -69,7 +68,6 @@ Divit D
 Douglas Hunley
 Dustin Keib
 Eduardo Gurgel
-Egor Romanov
 Eleftheria Trivyzaki
 Eliot Whalan
 Emmett Folger
